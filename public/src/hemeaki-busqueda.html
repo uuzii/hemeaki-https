@@ -1,0 +1,152 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hemeaki-busqueda">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block
+            }
+
+            @media screen and (max-width: 600px) {
+                :host {
+                    min-height: calc(100vh - 106px);
+                }
+            }
+
+            .input-container {
+                max-width: 300px;
+                display: inline-block;
+                background-color: #eee;
+                border-radius: 100px;
+                padding: 4px 1em 0 1em;
+                margin-bottom: 1em;
+            }
+
+            .search-icon {
+                margin-right: 10px;
+            }
+
+            .catalog-container {
+                padding: 8px 0;
+                max-width: 690px;
+            }
+
+            .catalog-item {
+                padding: 0 8px;
+                box-sizing: border-box;
+            }
+
+            div.catalog-item:hover {
+                background-color: #eee;
+            }
+
+            div.catalog-item > a {
+                padding: 12px 16px;
+                display: flex;
+            }
+
+            .category-item-text {
+                flex: 1 0;
+                margin-right: 8px;
+            }
+
+            div.category-item-text > p {
+                margin-top: 6px;
+                font-size: 15px;
+                color: #666;
+            }
+
+            h3 {
+                margin: 0;
+            }
+
+            .category-item-rate {
+                flex-basis: 120px;
+                display: flex;
+                padding-left: 16px;
+            }
+
+            div.category-item-rate > iron-icon {
+                color: #f3b70b;
+            }
+
+            div.category-item-rate > span {
+                margin: 4px 0 0 10px;
+            }
+        </style>
+
+        <div class="container">
+            <h1>Búsqueda</h1>
+
+            <div class="input-container">
+                <paper-input label="Buscar" no-label-float>
+                    <iron-icon class="search-icon" icon="search" slot="prefix"></iron-icon>
+                </paper-input>
+            </div>
+
+            
+            <template is="dom-repeat" items="{{anunciantes.results}}">
+                <p>[[item.name]]</p>
+            </template>
+            
+
+            <!--div class="catalog-container shadow">
+                    
+                <div class="catalog-item">
+                    <a href="/perfil/blk" class="items-anchor">
+                                
+                        <div class="circle"></div>
+        
+                        <div class="category-item-text">
+                            <h3>BLK</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                        </div>
+                                                    
+                        <template is="dom-if" if="{{escritorio}}">
+                            <div class="category-item-rate">
+                                <iron-icon icon="star"></iron-icon>
+                                <span class="rate">4.6</span>
+                            </div>
+                        </template>
+                                                    
+                    </a>
+                </div>
+                    
+            </div-->
+        </div>
+        
+
+    </template>
+
+    <script>
+        /**
+         * `hemeaki-busqueda` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+        class HemeakiBusqueda extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-busqueda';
+            }
+
+            static get properties() {
+                return {
+                    anunciantes: Object
+                };
+            }
+
+            imprime() {
+                console.log(this.anunciantes.results);
+            }
+
+            
+
+        }
+
+        window.customElements.define(HemeakiBusqueda.is, HemeakiBusqueda);
+    </script>
+</dom-module>

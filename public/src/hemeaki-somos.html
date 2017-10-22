@@ -1,0 +1,76 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hemeaki-somos">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+
+            @media screen and (max-width: 600px) {
+                :host {
+                    min-height: calc(100vh - 106px);
+                }
+            }
+        </style>
+
+        <div class="container">
+            <h1>¿Quiénes somos?</h1>
+            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. A illo facere, aliquam necessitatibus <br>
+                vel ab, magnam, dignissimos nostrum vitae obcaecati delectus id vero? Reiciendis sit nisi totam <br>
+                deleniti eaque ipsa. </p>
+        </div>
+
+    </template>
+
+    <script>
+        /**
+         * `hemeaki-somos` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+        class HemeakiSomos extends Polymer.Element {
+            /**
+             * String providing the tag name to register the element under.
+             */
+            static get is() {
+                return 'hemeaki-somos';
+            }
+
+            /**
+             * Object describing property-related metadata used by Polymer features
+             */
+            static get properties() {
+                return {
+                    
+                };
+            }
+
+            /**
+             * Instance of the element is created/upgraded. Use: initializing state,
+             * set up event listeners, create shadow dom.
+             * @constructor
+             */
+            constructor() {
+                super();
+            }
+
+            /**
+             * Use for one-time configuration of your component after local DOM is initialized. 
+             */
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    
+                });
+            }
+
+        }
+
+        window.customElements.define(HemeakiSomos.is, HemeakiSomos);
+    </script>
+</dom-module>

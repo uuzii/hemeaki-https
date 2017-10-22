@@ -1,0 +1,97 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hemeaki-inicio">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                min-height: calc(100vh - 116px);
+                background-image: url('../assets/fondo.jpg');
+                background-position: center;
+                background-size: cover;
+                text-align: center;
+            }
+
+            @media screen and (max-width: 600px) {
+                :host {
+                    min-height: calc(100vh - 106px);
+                }
+            }
+
+            .main-square-logo {
+                background-color: rgba(0, 0, 0, 0.5);
+                padding: 1.5em;
+                border-radius: 5px;
+                display: inline-block;
+                margin-top: 10vh;
+            }
+
+            .logo {
+                width: 70vw;
+                max-width: 300px;
+            }
+
+            .todo {
+                width: 70vw;
+                max-width: 300px;
+            }
+        </style>
+
+        <div class="main-square-logo">
+            <img class="logo" src="../assets/recuadro.png" alt="">
+        </div> <br> <br>
+        <img class="todo" src="../assets/todo.png" alt="">
+
+    </template>
+
+    <script>
+        /**
+         * `hemeaki-inicio` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+        class HemeakiInicio extends Polymer.Element {
+            /**
+             * String providing the tag name to register the element under.
+             */
+            static get is() {
+                return 'hemeaki-inicio';
+            }
+
+            /**
+             * Object describing property-related metadata used by Polymer features
+             */
+            static get properties() {
+                return {
+                    
+                };
+            }
+
+            /**
+             * Instance of the element is created/upgraded. Use: initializing state,
+             * set up event listeners, create shadow dom.
+             * @constructor
+             */
+            constructor() {
+                super();
+            }
+
+            /**
+             * Use for one-time configuration of your component after local DOM is initialized. 
+             */
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    
+                });
+            }
+
+        }
+
+        window.customElements.define(HemeakiInicio.is, HemeakiInicio);
+    </script>
+</dom-module>

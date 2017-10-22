@@ -1,0 +1,288 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/mp-slider/mp-slider.html">
+
+<dom-module id="hemeaki-perfil">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+
+            @media screen and (max-width: 600px) {
+                :host {
+                    min-height: calc(100vh - 106px);
+                }
+            }
+
+            .container {
+                text-align: center;
+            }
+
+            .thumbnail {
+                width: 100px;
+                height: 100px;
+                margin-bottom: 1em;
+                text-align: center;
+                display: inline-block;
+            }
+
+            .contact-item {
+                display: inline-block;
+                margin: 10px 0;
+            }
+
+            paper-button {
+                background-color: white;
+                color: #666;  
+                font-size: 14px;
+                text-transform: none;
+                margin: 5px;
+                border: 1px #666 solid;
+                font-weight: bold;
+            }
+
+            iron-icon {
+                height: 18px;
+                width: 18px;
+                margin-right: 6px;
+            }
+
+            iron-icon + a {
+                font-size: 14px;
+                margin: 6px;
+            }
+
+            .label {
+                padding-right: 2px;
+                font-size: 18px;
+            }
+
+            .tags-container {
+                margin: 12px 0;
+            }
+
+
+            iron-image {
+                display: block;
+                background-color: white;
+                min-height: 500px;
+            }
+
+            skeleton-carousel {
+                min-height: 500px;
+            }
+
+            @media screen and (max-width: 600px) {
+                iron-image {
+                    display: block;
+                    background-color: white;
+                    min-height: 300px;
+                }
+
+                skeleton-carousel {
+                    min-height: 300px;
+                }
+            }
+
+            paper-fab {
+                position: fixed;
+                right: 1em;
+                bottom: 1em;
+                background-color: #0087F7;
+            }
+
+            .deletebtn {
+                margin-top: 3em;
+                background-color: red;
+                color: white;
+                border: none;
+            }
+
+            .red-btn {
+                margin: 0 5px;
+                border: none;
+            }
+        </style>
+
+        <app-route
+            route="[[route]]"
+            pattern="/:profile"
+            data="{{routeData}}">
+        </app-route>
+
+        
+        <iron-ajax
+            auto
+            url="https://18.216.43.3:3000/api/advertisers/{{routeData.profile}}"
+            handle-as="json"
+            last-response="{{perfil}}"></iron-ajax>
+
+        <iron-ajax
+            auto
+            url="https://18.216.43.3:3000/api/{{routeData.profile}}/images"
+            handle-as="json"
+            last-response="{{fotos}}"></iron-ajax>
+
+        <iron-ajax
+            id="deleteAjax"
+            method="DELETE"
+            handle-as="json"
+            on-response="redirect"></iron-ajax>
+
+        <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
+
+        <div class="container">
+            
+            <iron-image src="[[perfil.0.avatar]]" class="thumbnail" preload sizing="contain" style="min-height: 100px"></iron-image>
+            
+            <h1>[[perfil.0.name]]</h1>
+
+            <p>[[perfil.0.description]]</p>
+            
+            <paper-button>
+                <iron-icon icon="communication:phone"></iron-icon>
+                [[perfil.0.tel]]
+            </paper-button>
+
+            <paper-button>
+                <iron-icon icon="vaadin:at"></iron-icon>
+                [[perfil.0.email]]
+            </paper-button>
+
+            <paper-button>
+                <iron-icon icon="vaadin:facebook"></iron-icon>
+                [[perfil.0.facebookName]]
+            </paper-button>
+
+            <br>
+
+            <paper-button>
+                <iron-icon icon="communication:location-on"></iron-icon>
+                [[perfil.0.address]]
+            </paper-button>
+            
+            <div class="tags-container">
+
+                <template is="dom-repeat" items="{{tagsArray}}">
+                    <paper-chip single-line>
+                        <div slot="label" class="label">[[item.$val]]</div>
+                    </paper-chip>
+                </template>
+            </div>
+
+            <!--skeleton-carousel nav loop>
+                <template is="dom-repeat" items="{{fotos}}">
+                    <div>
+                        <iron-image 
+                            src="[[item.route]]"
+                            sizing="contain"
+                            preload
+                            fade>
+                        </iron-image>
+                    </div>    
+                </template>    
+            </skeleton-carousel-->
+
+            <image-carousel aria-label="example carousel">
+                <template is="dom-repeat" items="{{fotos}}" slot="images">
+                    <img src="[[item.route]]" class="scrolling-images" style="width: 100%; max-width: 500px;">
+                </template>
+            </image-carousel>
+            
+
+            <a href="https://www.fb.com/msg/{{perfil.0.facebookId}}">
+                <paper-fab src="../assets/messenger.png"></paper-fab>
+            </a>
+
+            
+             <br>
+            <template is="dom-if" if="{{storedUser.loggedin}}">
+                <paper-button raised class="deletebtn" on-tap="triggDialog">
+                        <iron-icon icon="delete"></iron-icon>
+                        Eliminar usuario
+                </paper-button>
+            </template>
+            
+            
+            
+        </div>
+
+        <paper-dialog id="actions">
+            <p>¿Seguro que dese eliminar la al anunciante {{perfil.0.name}}?</p>
+            <div class="buttons">
+                <paper-button class="red-btn" dialog-dismiss>Cancelar</paper-button>
+                <paper-button class="red-btn" for-slug="{{perfil.0.slug}}" on-tap="delete">Aceptar</paper-button>
+            </div>
+        </paper-dialog>
+
+        
+
+    </template>
+
+    <script>
+        /**
+         * `hemeaki-perfil` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+        class HemeakiPerfil extends Polymer.Element {
+            /**
+             * String providing the tag name to register the element under.
+             */
+            static get is() {
+                return 'hemeaki-perfil';
+            }
+
+            /**
+             * Object describing property-related metadata used by Polymer features
+             */
+            static get properties() {
+                return {
+                    tagsArray: {
+                        type: Array,
+                        value: []
+                    },
+
+                    tagsObjec: {
+                        type: Object,
+                        value: {} 
+                    }
+                };
+            }
+
+
+            showRoute() {
+                console.log(this.routeData);
+            }
+
+            consult(event) {
+                var tags = event.detail.response[0].tags;
+                this.array = tags.split(",");
+                console.log(this.array);
+            }
+
+            triggDialog() {
+                this.$.actions.open();
+            }
+
+            delete() {
+                const slug = this.perfil[0].slug;
+                this.$.deleteAjax.url = `https://18.216.43.3:3000/api/advertisers/${slug}`
+                //console.log(this.$.deleteAjax.url);
+                this.$.deleteAjax.generateRequest();
+                //this.$.actions.close();
+            }
+            
+            redirect() {
+                window.location = "/panel"
+            }
+
+        }
+
+        window.customElements.define(HemeakiPerfil.is, HemeakiPerfil);
+    </script>
+</dom-module>

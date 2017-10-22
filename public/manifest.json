@@ -1,0 +1,7 @@
+{
+  "name": "hemeaki",
+  "short_name": "hemeaki",
+  "description": "Sitio de recomendaciones de productos y servicios",
+  "start_url": "/",
+  "display": "standalone"
+}

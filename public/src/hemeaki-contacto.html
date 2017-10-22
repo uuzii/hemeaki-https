@@ -1,0 +1,122 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+
+<dom-module id="hemeaki-contacto">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+
+            @media screen and (max-width: 600px) {
+                :host {
+                    min-height: calc(100vh - 106px);
+                }
+            }
+
+            :root {
+                --paper-input-container-color: black;
+                --paper-input-container-focus-color: #E8172B;
+            }
+
+            paper-button {
+                background-color: #E8172B;
+                color: white;
+                width: 120px;
+                height: 18px;
+                padding: 20px;
+                font-size: 14px;
+                text-transform: none;
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+            }
+
+            .form-container {
+                max-width: 350px;
+            }
+        </style>
+
+        <div class="container">
+            <h1>Contacto</h1>
+            <p>Si quieres ser anunciante o tienes dudas o comentarios, ponte en contacto con nosotros</p>
+
+            
+            <div class="form-container">
+
+                <div class="error-container" hidden>
+                    <p>Se ha producido un error al enviar su mensaje, verifique que 
+                        todos los campos están llenos y sus datos son correctos</p>
+                </div>
+
+                <div class="succes-container" hidden>
+                    <p>Hemos recibido tu mensaje, pronto te contactaremos</p>
+                </div>
+                
+                <paper-input label="Nombre" allowed-pattern="[a-zA-Z ]"></paper-input>
+                
+                <paper-input label="Apellido" allowed-pattern="[a-zA-Z ]"></paper-input>
+                
+                <paper-input label="Email"></paper-input>
+    
+                <paper-input label="Teléfono" allowed-pattern="[0-9- ]"></paper-input>
+    
+                <paper-textarea placeholder="Mensaje"></paper-textarea>
+                <br>
+                <paper-button raised>Enviar</paper-button>
+            </div>
+            
+        </div>
+
+    </template>
+
+    <script>
+        /**
+         * `hemeaki-contacto` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+        class HemeakiContacto   extends Polymer.Element {
+            /**
+             * String providing the tag name to register the element under.
+             */
+            static get is() {
+                return 'hemeaki-contacto';
+            }
+
+            /**
+             * Object describing property-related metadata used by Polymer features
+             */
+            static get properties() {
+                return {
+                    
+                };
+            }
+
+            /**
+             * Instance of the element is created/upgraded. Use: initializing state,
+             * set up event listeners, create shadow dom.
+             * @constructor
+             */
+            constructor() {
+                super();
+            }
+
+            /**
+             * Use for one-time configuration of your component after local DOM is initialized. 
+             */
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    
+                });
+            }
+
+        }
+
+        window.customElements.define(HemeakiContacto.   is, HemeakiContacto)  ;
+    </script>
+</dom-module>

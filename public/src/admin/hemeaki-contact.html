@@ -1,0 +1,64 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hemeaki-contact">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block
+            }
+
+            .shadow {
+                padding: 1em;
+                margin-bottom: 1em;
+            }
+
+            a {
+                color: red;
+            }
+        </style>
+
+        <h1 style="margin-top: 1em">Solicitudes de contacto</h1>
+
+        <div class="shadow">
+            <div>
+                <h3>Uzi J. Rodríguez</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus illum quidem</p>
+                <p>
+                    <a href="">rodriguez.uzi@gmail.com</a> &nbsp;
+                    <a href="">5512002105</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="shadow">
+                <div>
+                    <h3>Uzi J. Rodríguez</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus illum quidem</p>
+                    <p>
+                        <a href="">rodriguez.uzi@gmail.com</a> &nbsp;
+                        <a href="">5512002105</a>
+                    </p>
+                </div>
+            </div>
+
+    </template>
+
+    <script>
+
+        class HemeakiContact extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-contact';
+            }
+
+            static get properties() {
+                return {
+                    
+                };
+            }
+
+        }
+
+        window.customElements.define(HemeakiContact.is, HemeakiContact);
+    </script>
+</dom-module>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <title>firebase-image-upload demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../bower_components/iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+    <link rel="import" href="../firebase-image-upload.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </head>
+  <body>
+
+    <div class="vertical-section-container centered">
+      <h3>Basic firebase-image-upload Demo</h3>
+      <demo-snippet>
+        <template>
+          <!--
+            Configure/Initialize Firebase
+            (see firebase-app docs for more details)
+          -->
+          <firebase-app
+            name="demo"
+            api-key="AIzaSyBo12km5XT-3i60kxJf8s6qtbB132BMWM8"
+            auth-domain="fir-image-demo.firebaseapp.com"
+            database-url="https://fir-image-demo.firebaseio.com"
+            storage-bucket="fir-image-demo.appspot.com"></firebase-app>
+          <!--
+            Pass in the app-name from firebase-app's name attribute. 
+           -->
+          <firebase-image-upload app-name='demo'></firebase-image-upload>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+</html>

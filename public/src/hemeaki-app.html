@@ -1,0 +1,350 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/lazy-imports/lazy-imports-mixin.html">
+
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-chip/paper-chip.html">
+<link rel="import" href="../bower_components/paper-chip/paper-chip-input.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+
+<link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
+<link rel="import" href="../bower_components/skeleton-carousel/skeleton-carousel.html">
+<link rel="import" href="../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+
+<link rel="import" href="hemeaki-admin.html">
+<link rel="import" href="hemeaki-busqueda.html">
+<link rel="import" href="hemeaki-categoria.html">
+<link rel="import" href="hemeaki-contacto.html">
+<link rel="import" href="hemeaki-inicio.html">
+<link rel="import" href="hemeaki-not-found.html">
+<link rel="import" href="admin/hemeaki-panel.html">
+<link rel="import" href="hemeaki-perfil.html">
+<link rel="import" href="hemeaki-somos.html">
+<link rel="import" href="shared-styles.html">
+
+<link rel="import" href="my-ga.html">
+<!--link rel="import" href="app-data.html"-->
+
+<dom-module id="hemeaki-app">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      :root {
+        --paper-input-container-color: #eee;
+        --paper-input-container-focus-color: #eee;
+      }
+
+      .sup-nav {
+        padding: 10px;
+      }
+
+      .inf-nav {
+        padding: 0 10px 10px;
+        width: 100vw;
+        box-sizing: border-box;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .sup-nav-mobile {
+        padding: 1em 10px;
+        text-align: center;
+      }
+
+      .nav-icons-mobile {
+        width: 23%;
+        display: inline-block;
+        text-align: center;
+      }
+
+      .icons-mobile {
+        color: #666;
+      }
+
+      .search-icon {
+        margin-right: 10px;
+      }
+
+      .main-logo {
+        height: 35px;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+
+      paper-button {
+        background-color: #E8172B;
+        color: white;
+        width: 120px;
+        height: 18px;
+        padding: 20px;
+        font-size: 14px;
+        text-transform: none;
+        font-family: 'Roboto', sans-serif;
+        margin-right: 3px;;
+      }
+
+      paper-input-container {
+        padding: 0;
+      }
+
+      .input-container {
+        width: 300px;
+        display: inline-block;
+        background-color: #eee;
+        border-radius: 100px;
+        padding: 4px 1em 0 1em;
+      }
+
+      .sup-nav-anchors-desktop {
+        font-size: 16px;
+        margin-left: 1em;
+        color: #666;
+        font-weight: bold;
+      }
+
+      paper-fab {
+        position: fixed;
+        bottom: 1em;
+        right: 1em;
+        background-color: #E8172B;
+      }
+
+      .logout-btn {
+        background-color: white;
+        color: #E8172B;
+        width: auto;
+        float: right;
+      }
+    </style>
+
+    <my-ga key="UA-108405836-1"></my-ga>  
+
+    <app-location route="{{route}}"></app-location>
+
+    <app-route
+      route="{{route}}"
+      pattern="/:page"
+      data="{{routeData}}"
+      tail="{{subroute}}"></app-route>
+
+    <!--app-data key="userData" data="{{storedUser}}"></app-data-->
+    <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
+    
+    <iron-ajax
+      auto
+      url="https://18.216.43.3:3000/api/categories"
+      handle-as="json"
+      last-response="{{lista}}"></iron-ajax>
+
+    <firebase-app
+      auth-domain="hemeaki-https.firebaseapp.com"
+      database-url="https://hemeaki-https.firebaseio.com/"
+      api-key="AIzaSyDnto_XcUT2RHJHaKg52XTFF4HWao88TVs"
+      storage-bucket="hemeaki-https.appspot.com"
+      messaging-sender-id="312481611453">
+    </firebase-app>
+    
+    <iron-media-query query="(min-width: 600px)" query-matches="{{escritorio}}"></iron-media-query>
+
+    <div>
+      <template is="dom-if" if="{{escritorio}}">
+        <div class="sup-nav">
+          <a href="/inicio">
+            <img class="main-logo" src="../assets/logo.png" alt="">
+          </a>
+          <div class="input-container">
+            <paper-input label="Buscar" no-label-float>
+              <iron-icon class="search-icon" icon="search" slot="prefix"></iron-icon>
+            </paper-input>
+          </div>
+          <a class="sup-nav-anchors-desktop" href="/somos">¿Quiénes somos?</a>
+          <a class="sup-nav-anchors-desktop" href="/contacto">Contacto</a>
+          
+          <template is="dom-if" if="[[storedUser.loggedin]]">
+            <a href="/admin">
+              <paper-button raised class="logout-btn" on-tap="logout">Cerrar sesión</paper-button>
+            </a>
+          </template>
+          
+        </div>
+      </template>
+      
+      <template is="dom-if" if="{{!escritorio}}">
+        <div class="sup-nav-mobile">
+          <div class="nav-icons-mobile"> <a href="/inicio"><iron-icon class="icons-mobile" icon="home"></a> </iron-icon></div>
+          <div class="nav-icons-mobile"> <a href="/busqueda"><iron-icon class="icons-mobile" icon="search"></a> </iron-icon></div>
+          <div class="nav-icons-mobile"> <a href="/somos"><iron-icon class="icons-mobile" icon="info"></a> </iron-icon></div>
+          <div class="nav-icons-mobile"> <a href="/contacto"><iron-icon class="icons-mobile" icon="markunread"></a> </iron-icon></div>
+          
+        </div>
+      </template>
+
+      <div class="inf-nav">
+        <template is="dom-repeat" items="{{lista}}">
+          <a href="/categorias/[[item.slug]]">
+            <paper-button raised>[[item.name]]</paper-button> 
+          </a>
+        </template>
+      </div>
+
+      <!--div class="inf-nav">
+        <a href="/categorias/comida">
+          <paper-button raised>Comida</paper-button> 
+        </a>
+        <a href="/categorias/salud">
+          <paper-button raised>Salud</paper-button> 
+        </a>
+        <a href="/categorias/belleza">
+          <paper-button raised>Belleza</paper-button> 
+        </a>
+        <a href="/categorias/comida">
+          <paper-button raised>Comida</paper-button> 
+        </a>
+        <a href="/categorias/salud">
+          <paper-button raised>Salud</paper-button> 
+        </a>
+        <a href="/categorias/belleza">
+          <paper-button raised>Belleza</paper-button> 
+        </a>
+        <a href="/categorias/comida">
+          <paper-button raised>Comida</paper-button> 
+        </a>
+        <a href="/categorias/salud">
+          <paper-button raised>Salud</paper-button> 
+        </a>
+        <a href="/categorias/belleza">
+          <paper-button raised>Belleza</paper-button> 
+        </a>
+        <a href="/categorias/comida">
+          <paper-button raised>Comida</paper-button> 
+        </a>
+        <a href="/categorias/salud">
+          <paper-button raised>Salud</paper-button> 
+        </a>
+        <a href="/categorias/belleza">
+          <paper-button raised>Belleza</paper-button> 
+        </a>
+      </div-->
+    </div>
+
+    <div>
+      <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
+        <hemeaki-inicio name="inicio" loading="{{loading}}"></hemeaki-inicio>
+        <hemeaki-categoria route="[[subroute]]" name="categorias" needly-key="{{thisKey}}"></hemeaki-categoria>
+        <hemeaki-perfil route="[[subroute]]" name="perfil"></hemeaki-perfil>
+        <hemeaki-contacto name="contacto"></hemeaki-contacto>
+        <hemeaki-busqueda name="busqueda"></hemeaki-busqueda>
+        <hemeaki-panel name="panel"></hemeaki-panel>
+        <hemeaki-somos name="somos"></hemeaki-somos>
+        <hemeaki-admin name="admin"></hemeaki-admin>
+        <hemeaki-404 name="404"></hemeaki-404>
+      </iron-pages>
+    </div>
+
+    
+    
+    <template is="dom-if" if="{{!escritorio}}">
+      <template is="dom-if" if="[[storedUser.loggedin]]">
+        <div class="sup-nav-mobile" style="background-color: #E8172B">
+          <div class="nav-icons-mobile"> <a href=""><iron-icon class="icons-mobile" icon="exit-to-app" on-tap="logout" style="color: white"></a> </iron-icon></div>
+          <div class="nav-icons-mobile"> <a href="/panel"><iron-icon class="icons-mobile" icon="dashboard" style="color: white"></a> </iron-icon></div>
+        </div>
+      </template>
+    </template>
+    
+    
+    <template is="dom-if" if="{{escritorio}}">
+      <template is="dom-if" if="[[storedUser.loggedin]]">
+        <a href="/panel">
+          <paper-fab icon="dashboard"></paper-fab>
+        </a>
+      </template>
+    </template>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class HemeakiApp extends Polymer.Element {
+      static get is() { return 'hemeaki-app'; }
+      static get properties() {
+        return {
+          storedUser: Object
+        };
+      }
+
+      /**
+        * Called every time the element is inserted into the DOM. Useful for 
+        * running setup code, such as fetching resources or rendering.
+        * Generally, you should try to delay work until this time.
+        */
+      connectedCallback() {
+        super.connectedCallback();
+      
+        this.dispatchEvent(new CustomEvent('kick', {detail: {kicked: true}}));
+      
+      }
+
+      static get observers() { return [
+        '_routePageChanged(routeData.page)'
+      ]}
+
+      getCurrentKey(e) {
+        var key = e.currentTarget.current;
+        this.thisKey = key;
+      }
+
+      _routePageChanged(page) {
+        
+        this.page = page || 'inicio';
+      }
+
+      _pageChanged(page, oldPage) {
+        if (page != null) {
+          // home route is eagerly loaded
+          if (page == 'inicio') {
+            this._pageLoaded(Boolean(oldPage));
+          // other routes are lazy loaded
+          } else {
+            // When a load failed, it triggered a 404 which means we need to
+            // eagerly load the 404 page definition
+            let cb = this._pageLoaded.bind(this, Boolean(oldPage));
+            Polymer.importHref(
+              this.resolveUrl('hemeaki-' + page + '.html'),
+              cb, cb, true);
+          }
+        }
+      }
+      
+      logout() {
+        this.storedUser = null;
+        window.location = 'inicio'
+      }
+
+    }
+
+    window.customElements.define(HemeakiApp.is, HemeakiApp);
+  </script>
+</dom-module>

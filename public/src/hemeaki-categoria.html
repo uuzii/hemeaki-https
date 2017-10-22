@@ -1,0 +1,167 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hemeaki-categoria">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                background-image: url('../assets/conect.png');
+                min-height: calc(100vh - 116px);
+                background-position: center;
+                background-size: cover;
+                /*background-color: #eee;*/
+            }
+
+            @media screen and (max-width: 600px) {
+                :host {
+                    min-height: calc(100vh - 106px);
+                }
+            }
+
+            .catalog-container {
+                padding: 8px 0;
+                max-width: 690px;
+            }
+
+            .catalog-item {
+                padding: 0 8px;
+                box-sizing: border-box;
+            }
+
+            div.catalog-item:hover {
+                background-color: #eee;
+            }
+
+            div.catalog-item > a {
+                padding: 12px 16px;
+                display: flex;
+            }
+
+            .category-item-text {
+                flex: 1 0;
+                margin-right: 8px;
+            }
+
+            div.category-item-text > p {
+                margin-top: 6px;
+                font-size: 15px;
+                color: #666;
+            }
+
+            h3 {
+                margin: 0;
+            }
+
+            .category-item-rate {
+                flex-basis: 120px;
+                display: flex;
+                padding-left: 16px;
+            }
+
+            div.category-item-rate > iron-icon {
+                color: #f3b70b;
+            }
+
+            div.category-item-rate > span {
+                margin: 4px 0 0 10px;
+            }
+        </style>
+
+        <app-route
+            route="[[route]]"
+            pattern="/:category"
+            data="{{routeData}}">
+        </app-route>
+    
+        <iron-ajax
+            auto
+            url="https://18.216.43.3:3000/api/{{routeData.category}}/advertisers"
+            handle-as="json"
+            on-response="consult"
+            last-response="{{list}}"
+            on-error="error"></iron-ajax>
+        
+
+        <iron-media-query query="(min-width: 600px)" query-matches="{{escritorio}}"></iron-media-query>
+
+        <div class="container">
+            <h1 style="text-transform: uppercase">{{routeData.category}}</h1>            
+
+            <div class="catalog-container shadow">
+
+                <!--div class="catalog-item">
+                    <a href="/perfil/blk" class="items-anchor">
+            
+                        <div class="circle"></div>
+            
+                        <div class="category-item-text">
+                            <h3>BLK</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                        </div>
+                                
+                        <template is="dom-if" if="{{escritorio}}">
+                            <div class="category-item-rate">
+                                <iron-icon icon="star"></iron-icon>
+                                <span class="rate">4.6</span>
+                            </div>
+                        </template>
+                                
+                    </a>
+                </div-->
+
+                
+                <template is="dom-repeat" items="{{list}}" sort="_sortItems" initial-count="1">
+                    <div class="catalog-item">
+                        <a href="/perfil/[[item.slug]]" class="items-anchor">
+                            
+                            <iron-image src="[[item.avatar]]" class="circle" preload sizing="contain"></iron-image>
+                    
+                            <div class="category-item-text">
+                                <h3>[[item.name]]</h3>
+                                <p>[[item.description]]</p>
+                            </div>
+
+                            <template is="dom-if" if="{{escritorio}}">
+                                <div class="category-item-rate">
+                                    <iron-icon icon="star"></iron-icon>
+                                    <span class="rate">[[item.rate]]</span>
+                                </div>
+                            </template>
+                                        
+                        </a>
+                    </div>
+                </template>
+                
+
+            </div>
+            
+
+        </div>
+
+    </template>
+
+    <script>
+        class HemeakiCategoria extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-categoria';
+            }
+
+        
+
+            consult(event) {
+                //console.log(event.detail.response);
+            }
+
+            error() {
+                console.error('Error al cargar');
+            }
+
+            _sortItems() {
+                return Math.round(Math.random()*3) - 1;
+            }
+        }
+
+        window.customElements.define(HemeakiCategoria.is, HemeakiCategoria);
+    </script>
+</dom-module>
