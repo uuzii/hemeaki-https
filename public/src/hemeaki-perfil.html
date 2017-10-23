@@ -113,14 +113,15 @@
 
         
         <iron-ajax
-            auto
-            url="https://18.216.43.3:3000/api/advertisers/{{routeData.profile}}"
+            auto 
+            url="https://hemeaki-api.herokuapp.com/api/advertiser/{{routeData.profile}}"
             handle-as="json"
-            last-response="{{perfil}}"></iron-ajax>
+            last-response="{{perfil}}"
+            on-response="parseTags"></iron-ajax>
 
         <iron-ajax
-            auto
-            url="https://18.216.43.3:3000/api/{{routeData.profile}}/images"
+            auto 
+            url="https://hemeaki-api.herokuapp.com/api/{{routeData.profile}}/images"
             handle-as="json"
             last-response="{{fotos}}"></iron-ajax>
 
@@ -134,39 +135,46 @@
 
         <div class="container">
             
-            <iron-image src="[[perfil.0.avatar]]" class="thumbnail" preload sizing="contain" style="min-height: 100px"></iron-image>
+            <iron-image src="[[perfil.advertiser.0.avatar]]" class="thumbnail" preload sizing="contain" style="min-height: 100px"></iron-image>
             
-            <h1>[[perfil.0.name]]</h1>
+            <h1>[[perfil.advertiser.0.name]]</h1>
 
-            <p>[[perfil.0.description]]</p>
+            <p>[[perfil.advertiser.0.description]]</p>
             
-            <paper-button>
-                <iron-icon icon="communication:phone"></iron-icon>
-                [[perfil.0.tel]]
-            </paper-button>
+            <a href="tel:[[perfil.advertiser.0.tel]]">
+                <paper-button>
+                    <iron-icon icon="communication:phone"></iron-icon>
+                    [[perfil.advertiser.0.tel]]
+                </paper-button>
+            </a>
 
-            <paper-button>
-                <iron-icon icon="vaadin:at"></iron-icon>
-                [[perfil.0.email]]
-            </paper-button>
+            <a href="mailto:[[perfil.advertiser.0.email]]">
+                <paper-button>
+                    <iron-icon icon="vaadin:at"></iron-icon>
+                    [[perfil.advertiser.0.email]]
+                </paper-button>
+            </a>
 
-            <paper-button>
-                <iron-icon icon="vaadin:facebook"></iron-icon>
-                [[perfil.0.facebookName]]
-            </paper-button>
+            <a href="https://www.facebook.com/[[perfil.advertiser.0.facebookName]]/" target="_blank">
+                <paper-button>
+                    <iron-icon icon="vaadin:facebook"></iron-icon>
+                    [[perfil.advertiser.0.facebookName]]
+                </paper-button>
+            </a>
 
             <br>
 
-            <paper-button>
-                <iron-icon icon="communication:location-on"></iron-icon>
-                [[perfil.0.address]]
-            </paper-button>
+            <a href="">
+                <paper-button>
+                    <iron-icon icon="communication:location-on"></iron-icon>
+                    [[perfil.advertiser.0.address]]
+                </paper-button>
+            </a>
             
             <div class="tags-container">
-
                 <template is="dom-repeat" items="{{tagsArray}}">
                     <paper-chip single-line>
-                        <div slot="label" class="label">[[item.$val]]</div>
+                        <div slot="label" class="label">[[item]]</div>
                     </paper-chip>
                 </template>
             </div>
@@ -185,13 +193,13 @@
             </skeleton-carousel-->
 
             <image-carousel aria-label="example carousel">
-                <template is="dom-repeat" items="{{fotos}}" slot="images">
+                <template is="dom-repeat" items="{{fotos.images}}" slot="images">
                     <img src="[[item.route]]" class="scrolling-images" style="width: 100%; max-width: 500px;">
                 </template>
             </image-carousel>
             
 
-            <a href="https://www.fb.com/msg/{{perfil.0.facebookId}}">
+            <a href="https://www.fb.com/msg/{{perfil.advertiser.0.facebookId}}" target="_blank">
                 <paper-fab src="../assets/messenger.png"></paper-fab>
             </a>
 
@@ -209,7 +217,7 @@
         </div>
 
         <paper-dialog id="actions">
-            <p>¿Seguro que dese eliminar la al anunciante {{perfil.0.name}}?</p>
+            <p>¿Seguro que dese eliminar la al anunciante '{{perfil.advertiser.0.name}}'?</p>
             <div class="buttons">
                 <paper-button class="red-btn" dialog-dismiss>Cancelar</paper-button>
                 <paper-button class="red-btn" for-slug="{{perfil.0.slug}}" on-tap="delete">Aceptar</paper-button>
@@ -221,35 +229,17 @@
     </template>
 
     <script>
-        /**
-         * `hemeaki-perfil` Description
-         *
-         * @summary ShortDescription.
-         * @customElement
-         * @polymer
-         * @extends {Polymer.Element}
-         */
+
         class HemeakiPerfil extends Polymer.Element {
-            /**
-             * String providing the tag name to register the element under.
-             */
+
             static get is() {
                 return 'hemeaki-perfil';
             }
 
-            /**
-             * Object describing property-related metadata used by Polymer features
-             */
             static get properties() {
                 return {
                     tagsArray: {
-                        type: Array,
-                        value: []
-                    },
-
-                    tagsObjec: {
-                        type: Object,
-                        value: {} 
+                        type: Array
                     }
                 };
             }
@@ -270,8 +260,8 @@
             }
 
             delete() {
-                const slug = this.perfil[0].slug;
-                this.$.deleteAjax.url = `https://18.216.43.3:3000/api/advertisers/${slug}`
+                const slug = this.perfil.advertiser[0].slug;
+                this.$.deleteAjax.url = `https://hemeaki-api.herokuapp.com/api/advertiser/${slug}`
                 //console.log(this.$.deleteAjax.url);
                 this.$.deleteAjax.generateRequest();
                 //this.$.actions.close();
@@ -279,6 +269,14 @@
             
             redirect() {
                 window.location = "/panel"
+            }
+
+            imprimir() {
+                console.log(this.perfil.advertiser[0].tags.split(",").map(String));
+            }
+
+            parseTags() {
+                this.tagsArray = this.perfil.advertiser[0].tags.split(",").map(String);
             }
 
         }

@@ -59,22 +59,22 @@
         </style>
 
         <iron-ajax
-            id="advertiserAjax"
-            url="https://18.216.43.3:3000/api/advertisers"
+            id="advertiserAjax" 
+            url="https://hemeaki-api.herokuapp.com/api/advertiser"
             method="POST"
             content-type="application/json"
             on-response="postPhotos"></iron-ajax>
 
         <iron-ajax
             id="photoAjax"
-            url="https://18.216.43.3:3000/api/images"
+            url="https://hemeaki-api.herokuapp.com/api/image"
             method="POST"
             content-type="application/json"
             on-response="refresh"></iron-ajax>
 
         <iron-ajax
             auto
-            url="https://18.216.43.3:3000/api/categories"
+            url="https://hemeaki-api.herokuapp.com/api/categories"
             handle-as="json"
             last-response="{{lista}}"></iron-ajax> 
 
@@ -111,7 +111,7 @@
             <paper-dropdown-menu label="Categoría" value="{{formData.slugCategory}}">
                 <paper-listbox slot="dropdown-content" selected="1">
                     
-                    <template is="dom-repeat" items="{{lista}}">
+                    <template is="dom-repeat" items="{{lista.categories}}">
                         <paper-item>[[item.name]]</paper-item>
                     </template>
                     
@@ -221,6 +221,12 @@
                     }
                         
                 };
+            }
+
+            camelPlus(str) {
+                var resp = str;
+                resp = resp.replace(new RegExp(/\s/g),"+");
+                return resp;
             }
 
             quitaacentos(s) {

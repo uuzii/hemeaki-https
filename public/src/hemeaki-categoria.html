@@ -75,7 +75,7 @@
     
         <iron-ajax
             auto
-            url="https://18.216.43.3:3000/api/{{routeData.category}}/advertisers"
+            url="https://hemeaki-api.herokuapp.com/api/{{routeData.category}}/advertisers"
             handle-as="json"
             on-response="consult"
             last-response="{{list}}"
@@ -110,7 +110,7 @@
                 </div-->
 
                 
-                <template is="dom-repeat" items="{{list}}" sort="_sortItems" initial-count="1">
+                <template is="dom-repeat" items="{{list.advertisers}}" sort="_sortItems" initial-count="1">
                     <div class="catalog-item">
                         <a href="/perfil/[[item.slug]]" class="items-anchor">
                             
@@ -121,12 +121,12 @@
                                 <p>[[item.description]]</p>
                             </div>
 
-                            <template is="dom-if" if="{{escritorio}}">
+                            <!--template is="dom-if" if="{{escritorio}}">
                                 <div class="category-item-rate">
                                     <iron-icon icon="star"></iron-icon>
                                     <span class="rate">[[item.rate]]</span>
                                 </div>
-                            </template>
+                            </template-->
                                         
                         </a>
                     </div>

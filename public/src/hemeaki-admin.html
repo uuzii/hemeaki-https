@@ -127,7 +127,7 @@
             }
 
             postLogin() {
-                this.$.loginAjax.url = 'https://18.216.43.3:3000/api/signin';
+                this.$.loginAjax.url = 'https://hemeaki-api.herokuapp.com/api/signin';
                 this._setReqBody();
                 this.$.loginAjax.generateRequest();
             }
@@ -135,11 +135,11 @@
             handleUserResponse(event) {
                 var response = JSON.parse(event.detail.response);
 
-                if (response.data.token) {
+                if (response.token) {
                     this.error = '';
                     this.storedUser = {
                         name: this.formData.user,
-                        token: 'Bearer' + ' ' + response.data.token,
+                        token: 'Bearer' + ' ' + response.token,
                         loggedin: true
                     };
 

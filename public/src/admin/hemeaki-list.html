@@ -138,21 +138,21 @@
         
         <iron-ajax
             id="categoryAjax"
-            url="https://18.216.43.3:3000/api/categories"
+            url="https://hemeaki-api.herokuapp.com/api/category"
             method="POST"
             content-type="application/json"
             on-response="refresh"></iron-ajax>
 
         <iron-ajax
             auto
-            url="https://18.216.43.3:3000/api/advertisers"
+            url="https://hemeaki-api.herokuapp.com/api/advertisers"
             method="GET"
             content-type="application/json"
             last-response="{{anunciantes}}"></iron-ajax>
 
         <iron-ajax
             auto
-            url="https://18.216.43.3:3000/api/categories"
+            url="https://hemeaki-api.herokuapp.com/api/categories"
             handle-as="json"
             last-response="{{categorias}}"></iron-ajax>
 
@@ -171,7 +171,7 @@
 
         <div class="list shadow">
             
-            <template is="dom-repeat" items="{{anunciantes}}">
+            <template is="dom-repeat" items="{{anunciantes.advertisers}}">
             
                 <div class="list-item">
                                 
@@ -184,16 +184,16 @@
                             <p>[[item.description]]</p>
                         </div>
                                         
-                        <template is="dom-if" if="{{escritorio}}">
+                        <!--template is="dom-if" if="{{escritorio}}">
                             <div class="list-item-icons">
                                 <iron-icon icon="star"></iron-icon>
                                 <span class="rate">4.6</span>            
                             </div>
-                        </template>
+                        </template-->
                                                     
                     </a>
                                 
-                    <template is="dom-if" if="{{!escritorio}}">
+                    <!--template is="dom-if" if="{{!escritorio}}">
                         <div class="item-actions-mobile">
                             <div class="item-actions">
                                 <iron-icon class="star-icon-mobile" icon="star"></iron-icon>
@@ -204,7 +204,7 @@
                                 <paper-icon-button icon="delete" on-tap="triggDialog"></paper-icon-button>
                             </div>
                         </div>
-                    </template>
+                    </template-->
                                 
                 </div>
             </template>
@@ -275,7 +275,7 @@
 
         <div class="cat-item-list">
 
-            <template is="dom-repeat" items="{{categorias}}">
+            <template is="dom-repeat" items="{{categorias.categories}}">
                 <div class="cat-item">
                     <div class="cat-item-name">
                         <span>{{item.name}}</span>
@@ -364,7 +364,7 @@
 
             deleteCat() {
                 const cat = this.selectedCat;
-                this.$.deleteCatAjax.url = `https://18.216.43.3:3000/api/categories/${cat}`
+                this.$.deleteCatAjax.url = `https://hemeaki-api.herokuapp.com/api/category/${cat}`
                 this.$.deleteCatAjax.generateRequest();
                 this.$.dialog.close();
             }

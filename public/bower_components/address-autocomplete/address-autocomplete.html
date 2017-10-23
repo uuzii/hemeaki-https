@@ -112,9 +112,13 @@ Example:
       var place = this.autocomplete.getPlace();
       if (!place) {
         return;
-      }
+      }   
 
-      this.$.address1Input.value = (this._getAddressComponent(place, 'route', 'long_name') + ' ' + this._getAddressComponent(place, 'street_number', 'short_name')).trim() || place.name;
+      this.$.address1Input.value = (this._getAddressComponent(place, 'route', 'long_name') + 
+      ' ' + this._getAddressComponent(place, 'street_number', 'short_name') +
+      ' ' + this._getAddressComponent(place, 'sublocality_level_1', 'long_name') +
+      ' ' + this._getAddressComponent(place, 'locality', 'long_name') +
+      ' ' + this._getAddressComponent(place, 'administrative_area_level_1', 'short_name')).trim() || place.name;
       /*this.$.address2Input.value = '';
       this.$.cityInput.value = this._getAddressComponent(place, 'locality', 'long_name');
       this.$.stateInput.value = this._getAddressComponent(place, 'administrative_area_level_1', 'short_name');

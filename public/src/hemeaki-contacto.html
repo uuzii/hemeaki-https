@@ -36,6 +36,15 @@
             }
         </style>
 
+        
+        <iron-ajax
+            id="contactAjax" 
+            url="https://hemeaki-api.herokuapp.com/api/contact"
+            method="POST"
+            content-type="application/json"
+            on-response="trigDialog"></iron-ajax>
+        
+
         <div class="container">
             <h1>Contacto</h1>
             <p>Si quieres ser anunciante o tienes dudas o comentarios, ponte en contacto con nosotros</p>
@@ -52,67 +61,62 @@
                     <p>Hemos recibido tu mensaje, pronto te contactaremos</p>
                 </div>
                 
-                <paper-input label="Nombre" allowed-pattern="[a-zA-Z ]"></paper-input>
+                <paper-input label="Nombre" allowed-pattern="[a-zA-Z ]" value="{{formData.name}}"></paper-input>
                 
-                <paper-input label="Apellido" allowed-pattern="[a-zA-Z ]"></paper-input>
+                <paper-input label="Apellido" allowed-pattern="[a-zA-Z ]" value="{{formData.lastName}}"></paper-input>
                 
-                <paper-input label="Email"></paper-input>
+                <paper-input label="Email" value="{{formData.email}}"></paper-input>
     
-                <paper-input label="Teléfono" allowed-pattern="[0-9- ]"></paper-input>
+                <paper-input label="Teléfono" allowed-pattern="[0-9- ]" value="{{formData.tel}}"></paper-input>
     
-                <paper-textarea placeholder="Mensaje"></paper-textarea>
+                <paper-textarea placeholder="Mensaje" value="{{formData.message}}"></paper-textarea>
                 <br>
-                <paper-button raised>Enviar</paper-button>
+                <paper-button raised on-tap="addContact">Enviar</paper-button>
             </div>
             
         </div>
 
+        <paper-dialog id="messageSent">
+            <p>Gracias por enviarnos tu mensaje, pronto nos pondremos en contacto contigo</p>
+            <div class="buttons">
+                <paper-button class="red-btn" on-tap="acceptMsg">Aceptar</paper-button>
+            </div>
+        </paper-dialog>
+
     </template>
 
     <script>
-        /**
-         * `hemeaki-contacto` Description
-         *
-         * @summary ShortDescription.
-         * @customElement
-         * @polymer
-         * @extends {Polymer.Element}
-         */
+
         class HemeakiContacto   extends Polymer.Element {
-            /**
-             * String providing the tag name to register the element under.
-             */
+
             static get is() {
                 return 'hemeaki-contacto';
             }
 
-            /**
-             * Object describing property-related metadata used by Polymer features
-             */
             static get properties() {
                 return {
-                    
+                    formData: {
+                        type: Object,
+                        value: {}
+                    }
                 };
             }
 
-            /**
-             * Instance of the element is created/upgraded. Use: initializing state,
-             * set up event listeners, create shadow dom.
-             * @constructor
-             */
-            constructor() {
-                super();
+            _setReqBody() {
+                this.$.contactAjax.body = this.formData;
             }
 
-            /**
-             * Use for one-time configuration of your component after local DOM is initialized. 
-             */
-            ready() {
-                super.ready();
+            addContact() {
+                this._setReqBody();
+                this.$.contactAjax.generateRequest();
+            }
 
-                Polymer.RenderStatus.afterNextRender(this, function() {
-                    
-                });
+            trigDialog() {
+                this.$.messageSent.open();
+            }
+
+            acceptMsg() {
+                window.location = "/inicio";
             }
 
         }

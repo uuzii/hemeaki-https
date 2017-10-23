@@ -136,7 +136,7 @@
       }
     </style>
 
-    <my-ga key="UA-108405836-1"></my-ga>  
+    <my-ga key="UA-108457045-1"></my-ga>  
 
     <app-location route="{{route}}"></app-location>
 
@@ -151,7 +151,7 @@
     
     <iron-ajax
       auto
-      url="https://18.216.43.3:3000/api/categories"
+      url="https://hemeaki-api.herokuapp.com/api/categories"
       handle-as="json"
       last-response="{{lista}}"></iron-ajax>
 
@@ -199,7 +199,7 @@
       </template>
 
       <div class="inf-nav">
-        <template is="dom-repeat" items="{{lista}}">
+        <template is="dom-repeat" items="{{lista.categories}}">
           <a href="/categorias/[[item.slug]]">
             <paper-button raised>[[item.name]]</paper-button> 
           </a>
@@ -340,7 +340,7 @@
       
       logout() {
         this.storedUser = null;
-        window.location = 'inicio'
+        window.location = '/inicio'
       }
 
     }
