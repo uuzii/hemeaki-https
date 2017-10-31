@@ -1,6 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/mp-slider/mp-slider.html">
+<link rel="import" href="../bower_components/photo-gallery/photo-gallery.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<!--link rel="import" href="../bower_components/photo-gallery/photo-gallery-icon.html"-->
 
 <dom-module id="hemeaki-perfil">
     <template>
@@ -20,9 +23,8 @@
             }
 
             .thumbnail {
-                width: 100px;
-                height: 100px;
-                margin-bottom: 1em;
+                height: 150px;
+                width: 150px;
                 text-align: center;
                 display: inline-block;
             }
@@ -66,7 +68,6 @@
             iron-image {
                 display: block;
                 background-color: white;
-                min-height: 500px;
             }
 
             skeleton-carousel {
@@ -77,7 +78,6 @@
                 iron-image {
                     display: block;
                     background-color: white;
-                    min-height: 300px;
                 }
 
                 skeleton-carousel {
@@ -94,7 +94,7 @@
 
             .deletebtn {
                 margin-top: 3em;
-                background-color: red;
+                background-color: #E8172B;
                 color: white;
                 border: none;
             }
@@ -111,7 +111,6 @@
             data="{{routeData}}">
         </app-route>
 
-        
         <iron-ajax
             auto 
             url="https://hemeaki-api.herokuapp.com/api/advertiser/{{routeData.profile}}"
@@ -130,12 +129,18 @@
             method="DELETE"
             handle-as="json"
             on-response="redirect"></iron-ajax>
+        
+        <iron-ajax
+            id="deleteImagesAjax"
+            method="DELETE"
+            handle-as="json"
+            on-error="errorDeleteImage"></iron-ajax>
 
         <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
 
         <div class="container">
             
-            <iron-image src="[[perfil.advertiser.0.avatar]]" class="thumbnail" preload sizing="contain" style="min-height: 100px"></iron-image>
+            <iron-image src="[[perfil.advertiser.0.avatar]]" class="thumbnail" preload sizing="contain"></iron-image>
             
             <h1>[[perfil.advertiser.0.name]]</h1>
 
@@ -143,7 +148,7 @@
             
             <a href="tel:[[perfil.advertiser.0.tel]]">
                 <paper-button>
-                    <iron-icon icon="communication:phone"></iron-icon>
+                    <iron-icon src="../assets/whatsapp-logo.png"></iron-icon>
                     [[perfil.advertiser.0.tel]]
                 </paper-button>
             </a>
@@ -164,7 +169,7 @@
 
             <br>
 
-            <a href="">
+            <a href="https://www.google.com.mx/maps/place/[[perfil.advertiser.0.parsedAddress]]" target="_blank">
                 <paper-button>
                     <iron-icon icon="communication:location-on"></iron-icon>
                     [[perfil.advertiser.0.address]]
@@ -174,45 +179,28 @@
             <div class="tags-container">
                 <template is="dom-repeat" items="{{tagsArray}}">
                     <paper-chip single-line>
-                        <div slot="label" class="label">[[item]]</div>
+                        <div slot="label" class="label" style="font-size: 14px">[[item]]</div>
                     </paper-chip>
                 </template>
             </div>
 
-            <!--skeleton-carousel nav loop>
-                <template is="dom-repeat" items="{{fotos}}">
-                    <div>
-                        <iron-image 
-                            src="[[item.route]]"
-                            sizing="contain"
-                            preload
-                            fade>
-                        </iron-image>
-                    </div>    
-                </template>    
-            </skeleton-carousel-->
-
-            <image-carousel aria-label="example carousel">
-                <template is="dom-repeat" items="{{fotos.images}}" slot="images">
-                    <img src="[[item.route]]" class="scrolling-images" style="width: 100%; max-width: 500px;">
+            <photo-gallery>
+                <template is='dom-repeat' items='[[fotos.images]]'>
+                    <div class='item' data-url$='[[item.route]]'></div>
                 </template>
-            </image-carousel>
+            </photo-gallery>
             
-
             <a href="https://www.fb.com/msg/{{perfil.advertiser.0.facebookId}}" target="_blank">
                 <paper-fab src="../assets/messenger.png"></paper-fab>
             </a>
 
-            
-             <br>
+            <br>
             <template is="dom-if" if="{{storedUser.loggedin}}">
                 <paper-button raised class="deletebtn" on-tap="triggDialog">
                         <iron-icon icon="delete"></iron-icon>
                         Eliminar usuario
                 </paper-button>
             </template>
-            
-            
             
         </div>
 
@@ -240,8 +228,27 @@
                 return {
                     tagsArray: {
                         type: Array
-                    }
+                    },
+                    imgs: Array
                 };
+            }
+
+            /**
+             * Use for one-time configuration of your component after local DOM is initialized. 
+             */
+            ready() {
+                super.ready();
+            
+                // When possible, use afterNextRender to defer non-critical
+                // work until after first paint.
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this.imgs = [
+                        "https://firebasestorage.googleapis.com/v0/b/hemeaki-https.appspot.com/o/galleries%2FConstrucciones%20BLK%2F1508962131095-AZOTEA%201%20(1).jpg?alt=media&token=cd60aaf3-32bf-4c60-be39-714b93b8845f",
+                        "https://firebasestorage.googleapis.com/v0/b/hemeaki-https.appspot.com/o/galleries%2FConstrucciones%20BLK%2F1508962131097-AZOTEA%202%20(2).jpg?alt=media&token=582c6cab-934d-4edd-a69d-0463f07fad08",
+                        "https://firebasestorage.googleapis.com/v0/b/hemeaki-https.appspot.com/o/galleries%2FConstrucciones%20BLK%2F1508962131099-AZOTEA%203%20(2).jpg?alt=media&token=179e8d46-e7d4-4604-abc7-b8b022333ed6"
+                    ]
+                });
+            
             }
 
 
@@ -259,12 +266,20 @@
                 this.$.actions.open();
             }
 
+            deleteImages() {
+                var myImages = this.fotos.images;
+                for (var index = 0; index < myImages.length; index++) {
+                    var myId = myImages[index]._id
+                    this.$.deleteImagesAjax.url = `https://hemeaki-api.herokuapp.com/api/image/${myId}`
+                    this.$.deleteImagesAjax.generateRequest();
+                }
+            }
+
             delete() {
+                this.deleteImages();
                 const slug = this.perfil.advertiser[0].slug;
                 this.$.deleteAjax.url = `https://hemeaki-api.herokuapp.com/api/advertiser/${slug}`
-                //console.log(this.$.deleteAjax.url);
                 this.$.deleteAjax.generateRequest();
-                //this.$.actions.close();
             }
             
             redirect() {
@@ -277,6 +292,14 @@
 
             parseTags() {
                 this.tagsArray = this.perfil.advertiser[0].tags.split(",").map(String);
+            }
+
+            getImages(e) {
+                console.log(this.fotos.images);
+            }
+
+            errorDeleteImage() {
+                console.log('Error al eliminar imagen');
             }
 
         }

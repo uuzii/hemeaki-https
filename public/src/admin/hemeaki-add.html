@@ -223,12 +223,6 @@
                 };
             }
 
-            camelPlus(str) {
-                var resp = str;
-                resp = resp.replace(new RegExp(/\s/g),"+");
-                return resp;
-            }
-
             quitaacentos(s) {
                 var r=s.toLowerCase();
                 r = r.replace(new RegExp(/\s/g),"-");
@@ -243,14 +237,14 @@
 
             _setReqBody() {
                 this.formData.slug = this.quitaacentos(this.formData.name);
-                //this.formData.parsedaddress = 'https://www.google.com.mx/maps/place/' + this.$.address.direccion.replace(/\s+/g, '+');
+                this.formData.parsedAddress = this.$.address.direccion.replace(new RegExp(/\s/g),"+");
                 this.formData.address = this.$.address.direccion;
                 this.formData.slugCategory = this.quitaacentos(this.formData.slugCategory);
                 this.formData.tags = this.$.tags.values.toString();
                 this.formData.avatar = this.myUrl;
                 this.formData.ranking = 5;
                 this.formData.qualifiers = 5;
-                console.log(this.formData);
+                //console.log(this.formData);
                 this.$.advertiserAjax.body = this.formData;
             }
 

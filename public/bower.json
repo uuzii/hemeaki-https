@@ -34,7 +34,8 @@
     "polymerfire": "firebase/polymerfire#^2.2.1",
     "mp-slider": "mpachnis/mp-slider#^2.0.2",
     "plastic-image": "mlisook/plastic-image#^1.0.12",
-    "image-carousel": "a1626/image-carousel#^2.0.0"
+    "image-carousel": "a1626/image-carousel#^2.0.0",
+    "photo-gallery": "supachailllpay/photo-gallery#^2.0.1"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",

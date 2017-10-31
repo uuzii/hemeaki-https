@@ -52,18 +52,14 @@
             
             <div class="form-container">
 
-                <div class="error-container" hidden>
+                <div class="error-container" id="errordiv" hidden>
                     <p>Se ha producido un error al enviar su mensaje, verifique que 
                         todos los campos están llenos y sus datos son correctos</p>
                 </div>
-
-                <div class="succes-container" hidden>
-                    <p>Hemos recibido tu mensaje, pronto te contactaremos</p>
-                </div>
                 
-                <paper-input label="Nombre" allowed-pattern="[a-zA-Z ]" value="{{formData.name}}"></paper-input>
+                <paper-input label="Nombre" allowed-pattern="[a-zA-Z .]" value="{{formData.name}}"></paper-input>
                 
-                <paper-input label="Apellido" allowed-pattern="[a-zA-Z ]" value="{{formData.lastName}}"></paper-input>
+                <paper-input label="Apellido" allowed-pattern="[a-zA-Z .]" value="{{formData.lastName}}"></paper-input>
                 
                 <paper-input label="Email" value="{{formData.email}}"></paper-input>
     
@@ -102,7 +98,24 @@
                 };
             }
 
+            validate(value, re) {
+                if(re === undefined) {
+                    return value !== undefined && value !== '';
+                }
+                return re.test(value);
+            }
+
             _setReqBody() {
+                var form = this.formData
+                if (!this.validate(form.name) || !this.validate(form.lastName) || 
+                    !this.validate(form.email) || !this.validate(form.tel) ||
+                    !this.validate(form.message)) {
+
+                        this.$.errordiv.hidden = false;
+                        return;
+                }
+
+                this.$.errordiv.hidden = true;
                 this.$.contactAjax.body = this.formData;
             }
 

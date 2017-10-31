@@ -77,11 +77,8 @@
             auto
             url="https://hemeaki-api.herokuapp.com/api/{{routeData.category}}/advertisers"
             handle-as="json"
-            on-response="consult"
-            last-response="{{list}}"
-            on-error="error"></iron-ajax>
+            last-response="{{list}}"></iron-ajax>
         
-
         <iron-media-query query="(min-width: 600px)" query-matches="{{escritorio}}"></iron-media-query>
 
         <div class="container">
@@ -89,27 +86,6 @@
 
             <div class="catalog-container shadow">
 
-                <!--div class="catalog-item">
-                    <a href="/perfil/blk" class="items-anchor">
-            
-                        <div class="circle"></div>
-            
-                        <div class="category-item-text">
-                            <h3>BLK</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-                        </div>
-                                
-                        <template is="dom-if" if="{{escritorio}}">
-                            <div class="category-item-rate">
-                                <iron-icon icon="star"></iron-icon>
-                                <span class="rate">4.6</span>
-                            </div>
-                        </template>
-                                
-                    </a>
-                </div-->
-
-                
                 <template is="dom-repeat" items="{{list.advertisers}}" sort="_sortItems" initial-count="1">
                     <div class="catalog-item">
                         <a href="/perfil/[[item.slug]]" class="items-anchor">
@@ -145,16 +121,6 @@
 
             static get is() {
                 return 'hemeaki-categoria';
-            }
-
-        
-
-            consult(event) {
-                //console.log(event.detail.response);
-            }
-
-            error() {
-                console.error('Error al cargar');
             }
 
             _sortItems() {
