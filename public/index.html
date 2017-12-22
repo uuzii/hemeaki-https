@@ -2,80 +2,56 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <base href="/">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
     <title>HemeAki</title>
-    <meta name="description" content="Sitio de recomendaciones de productos y servicios">
-    <link rel="icon" href="/assets/logo.png">
 
-    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="icon" href="/assets/logo-bar.png">
+
+    <meta name="description" content="Sitio de recomendaciones de productos y servicios">
+
+    <meta name="theme-color" content="#fff">
     <link rel="manifest" href="/manifest.json">
 
-    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
-
-    <link rel="import" href="/src/hemeaki-app.html" async>
-
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    
     <style>
       body {
         margin: 0;
         font-family: 'Roboto', sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        min-height: 100vh;
       }
 
-      #skeleton .header {
+      hemeaki-app[unresolved] {
+        display: block;
+        min-height: 101vh;
+        line-height: 68px;
         text-align: center;
-      }
-
-      .loading {
-        color: #E8172B;
-        margin: 0;
-        text-align: center;
-        padding-top: 30px;
-      }
-
-      .loader {
-        display: inline-block;
-        margin-top: 1em;
-        border: 16px solid #f3f3f3;
-        border-radius: 50%;
-        border-top: 16px solid #E8172B;
-        width: 60px;
-        height: 60px;
-        -webkit-animation: spin 2s linear infinite;
-        animation: spin 2s linear infinite;
-      }
-
-      @-webkit-keyframes spin {
-        0% { -webkit-transform: rotate(0deg); }
-        100% { -webkit-transform: rotate(360deg); }
-      }
-
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.3em;
+        color: #000;
+        padding: 0 16px;
+        overflow: visible;
       }
 
     </style>
+
   </head>
+
   <body>
 
-    <div id="skeleton">
-      <div class="header">
-        <h1 class="loading"><span style="color: black">Heme</span> aki</h1>
-        <div class="loader"></div>
-      </div>
-    </div>
+    <hemeaki-app></hemeaki-app> <!-- Pendiente agregar el unresolved -->
 
-    <hemeaki-app></hemeaki-app>
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="/src/hemeaki-app.html">
 
-    <!--script src="app.js" async></script-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
     <script>
-      document.querySelector('hemeaki-app').addEventListener('kick', function (e) {
-        //console.log(e.detail.kicked);
-        document.querySelector('div').remove();
-    })
+      window.performance && performance.mark && performance.mark('index.html');
     </script>
+
   </body>
 </html>

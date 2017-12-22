@@ -121,7 +121,7 @@
 
       paper-fab {
         position: fixed;
-        bottom: 1em;
+        bottom: 5em;
         right: 1em;
         background-color: #E8172B;
       }
@@ -172,11 +172,11 @@
       last-response="{{anunciantes}}"></iron-ajax>
 
     <firebase-app
-      auth-domain="hemeaki-https.firebaseapp.com"
-      database-url="https://hemeaki-https.firebaseio.com/"
-      api-key="AIzaSyDnto_XcUT2RHJHaKg52XTFF4HWao88TVs"
-      storage-bucket="hemeaki-https.appspot.com"
-      messaging-sender-id="312481611453">
+      auth-domain="hemeaki-nov.firebaseapp.com"
+      database-url="https://hemeaki-nov.firebaseio.com/"
+      api-key="AIzaSyD910FhzBA0JxEQh16lVErsXWVBgwTTbZ4"
+      storage-bucket="hemeaki-nov.appspot.com"
+      messaging-sender-id="391315163212">
     </firebase-app>
     
     <iron-media-query query="(min-width: 600px)" query-matches="{{escritorio}}"></iron-media-query>
@@ -320,8 +320,8 @@
           val = val.toLowerCase();
           return function(item) {
             var nam = item.name.toLowerCase();
-            var desc = item.description.toLowerCase();
-            return (nam.indexOf(val) != -1 || desc.indexOf(val) != -1 );
+            //var desc = item.description.toLowerCase();
+            return (nam.indexOf(val) != -1 /*|| desc.indexOf(val) != -1*/);
           };
         }
       }
