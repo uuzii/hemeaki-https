@@ -1,0 +1,89 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hemeaki-add-category">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                --paper-input-container-color: #999;
+                --paper-input-container-focus-color: #000;
+            }
+
+            .black {
+                background-color: black;
+                color: white;
+                margin-left: 0;
+                width: 100%;
+                text-transform: capitalize;
+            }
+        </style>
+
+        <iron-ajax id="categoryAjax" url="https://hemeaki-api.herokuapp.com/api/category" method="POST" content-type="application/json"
+            on-response="refresh"></iron-ajax>
+
+        <h1>Añadir Categoría</h1> <br>
+
+        <div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="add-category-input">
+                        <paper-input label="Nombre" value="{{formCategory.name}}"></paper-input>
+                    </div> <br>
+                    <div class="add-category-btn">
+                        <paper-button class="black" on-tap="addCategory">Añadir</paper-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        class HemeakiAddCategory extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-add-category';
+            }
+
+            static get properties() {
+                return {
+                    formCategory: {
+                        type: Object,
+                        value: {}
+                    }
+                };
+            }
+
+            toSlug(s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "-");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                return r;
+            }
+
+            _setReqBody() {
+                this.formCategory.slug = this.toSlug(this.formCategory.name);
+                this.formCategory.description = ' ';
+                this.$.categoryAjax.body = this.formCategory;
+            }
+
+            addCategory() {
+                this._setReqBody();
+                this.$.categoryAjax.generateRequest();
+                this.formData.name = null;
+            }
+
+            refresh() {
+                window.location.reload();
+            }
+
+        }
+
+        window.customElements.define(HemeakiAddCategory.is, HemeakiAddCategory);
+    </script>
+</dom-module>

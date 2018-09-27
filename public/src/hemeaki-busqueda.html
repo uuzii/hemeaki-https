@@ -1,141 +1,55 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="stylesheet" href="shared-styles.html">
 
 <dom-module id="hemeaki-busqueda">
     <template>
         <style include="shared-styles">
             :host {
-                display: block
-            }
-
-            @media screen and (max-width: 600px) {
-                :host {
-                    min-height: calc(100vh - 106px);
-                }
-            }
-
-            .input-container {
                 display: block;
-                background-color: #eee;
-                border-radius: 5px;
-                padding: 4px 1em 0 1em;
-                margin-bottom: 1em;
-            }
-
-            .search-icon {
-                margin-right: 10px;
-            }
-
-            .catalog-container {
-                padding: 8px 0;
-                max-width: 690px;
-            }
-
-            .catalog-item {
-                padding: 0 8px;
-                box-sizing: border-box;
-            }
-
-            div.catalog-item:hover {
-                background-color: #eee;
-            }
-
-            div.catalog-item > a {
-                padding: 12px 16px;
-                display: flex;
-            }
-
-            .category-item-text {
-                flex: 1 0;
-                margin-right: 8px;
-            }
-
-            div.category-item-text > p {
-                margin-top: 6px;
-                font-size: 15px;
-                color: #666;
-            }
-
-            h3 {
-                margin: 0;
-            }
-
-            .category-item-rate {
-                flex-basis: 120px;
-                display: flex;
-                padding-left: 16px;
-            }
-
-            div.category-item-rate > iron-icon {
-                color: #f3b70b;
-            }
-
-            div.category-item-rate > span {
-                margin: 4px 0 0 10px;
+                --paper-input-container-color: #999;
+                --paper-input-container-focus-color: #000;
             }
         </style>
 
-        <iron-ajax
-            auto
-            url="https://hemeaki-api.herokuapp.com/api/advertisers"
-            method="GET"
-            content-type="application/json"
-            last-response="{{anunciantes}}"></iron-ajax>
+        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/advertisers" method="GET" content-type="application/json" last-response="{{anunciantes}}"></iron-ajax>
 
         <div class="container">
             <h1>Búsqueda</h1>
 
-            <div class="input-container shadow">
+            <div>
                 <paper-input label="Buscar" no-label-float value="{{inputSearch}}">
                     <iron-icon class="search-icon" icon="search" slot="prefix"></iron-icon>
                 </paper-input>
-            </div>            
-            
-            <template is="dom-if" if="{{inputSearch}}">
-                <h3>Resultados para {{inputSearch}}</h3> <br>
-            </template>
-            
+            </div>
 
-            <div class="catalog-container shadow">
-                
-                <template is="dom-repeat" items="{{anunciantes.advertisers}}" filter="{{_filter(inputSearch)}}">
-                
-                    <div class="catalog-item">
-                        <a href="/perfil/[[item.slug]]" class="items-anchor">
-                                    
-                            <iron-image src="[[item.avatar]]" class="circle" preload sizing="contain"></iron-image>
-                            
-                            <div class="category-item-text">
-                                <h3>[[item.name]]</h3>
-                                <p>[[item.description]]</p>
-                            </div>
-                                                        
-                            <template is="dom-if" if="{{escritorio}}">
-                                <div class="category-item-rate">
-                                    <iron-icon icon="star"></iron-icon>
-                                    <span class="rate">4.6</span>
-                                </div>
-                            </template>
-                                                        
-                        </a>
-                    </div>
-
+            <dom-if if="[[inputSearch]]">
+                <template>
+                    <h3>Resultados para {{inputSearch}}</h3>
+                    <br>
                 </template>
-                    
+            </dom-if>
+
+            <div>
+                <dom-repeat items="[[anunciantes.advertisers]]" filter="{{_filter(inputSearch)}}">
+                    <template>
+                        <div>
+                            <a href="/perfil/[[item.slug]]">
+                                <iron-image src="[[item.avatar]]" preload sizing="contain"></iron-image>
+                                <div>
+                                    <h3>[[item.name]]</h3>
+                                    <p class="gray-text">[[item.description]]</p>
+                                </div>
+                            </a>
+                        </div>
+                    </template>
+                </dom-repeat>
             </div>
         </div>
-        
+
 
     </template>
 
     <script>
-        /**
-         * `hemeaki-busqueda` Description
-         *
-         * @summary ShortDescription.
-         * @customElement
-         * @polymer
-         * @extends {Polymer.Element}
-         */
         class HemeakiBusqueda extends Polymer.Element {
 
             static get is() {
@@ -156,14 +70,14 @@
                 } else {
                     // return a filter function for the current search val
                     val = val.toLowerCase();
-                    return function(item) {
-                      var nam = item.name.toLowerCase();
-                      var desc = item.description.toLowerCase();
-                      return (nam.indexOf(val) != -1 || desc.indexOf(val) != -1 );
+                    return function (item) {
+                        var nam = item.name.toLowerCase();
+                        var desc = item.description.toLowerCase();
+                        return (nam.indexOf(val) != -1 || desc.indexOf(val) != -1);
                     };
                 }
             }
-            
+
 
         }
 

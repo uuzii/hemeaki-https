@@ -1,0 +1,76 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+
+<dom-module id="hemeaki-advertisers">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+
+            .gray-text {
+                margin: 0;
+            }
+
+            a {
+                color: #000;
+            }
+        </style>
+
+        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/advertisers" method="GET" content-type="application/json" last-response="{{anunciantes}}"></iron-ajax>
+
+        <h1>Anunciantes</h1> <br>
+
+        <div>
+            <div class="row">
+                <dom-repeat items="[[anunciantes.advertisers]]">
+                    <template>
+                        <div class="col s12 m6 l4 ad-item">
+                            <div class="internal-square">
+                                <a href="/perfil/[[item.slug]]">
+                                    <div class="thumbnail-container" style="background-image: url('[[item.avatar]]')">
+                                        <!--img src="[[item.avatar]]" class="thumbnail" alt=""-->
+                                    </div>
+                                    <h3>[[item.name]]</h3>
+                                    <p class="gray-text">[[item.description]]</p>
+                                </a>
+
+                                <div class="btns-div">
+
+                                    <paper-button class="item-btns">
+                                        <iron-icon icon="star" class="small-icon star"></iron-icon>
+                                        <span class="inside-btn">[[item.ranking]]</span>
+                                    </paper-button>
+
+                                    <paper-button class="item-btns">
+                                        <iron-icon icon="delete" class="small-icon delete"></iron-icon>
+                                    </paper-button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </dom-repeat>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        class HemeakiAdvertisers extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-advertisers';
+            }
+
+            static get properties() {
+                return {
+
+                };
+            }
+
+        }
+
+        window.customElements.define(HemeakiAdvertisers.is, HemeakiAdvertisers);
+    </script>
+</dom-module>

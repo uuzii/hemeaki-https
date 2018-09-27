@@ -1,0 +1,181 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+
+<dom-module id="hemeaki-categories">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                --paper-input-container-color: #999;
+                --paper-input-container-focus-color: #000;
+            }
+
+            a {
+                color: white;
+            }
+
+            h3 {
+                font-weight: lighter;
+            }
+
+            .inside-sq {
+                margin-right: 3em;
+                border-radius: 3px;
+                padding: 4px 10px;
+                background-color: #E8172B;
+                color: white;
+            }
+
+            .apartado {
+                margin-bottom: 3em;
+            }
+
+            .control {
+                margin-top: 1em;
+            }
+
+            @media screen and (max-width: 600px) {
+                .inside-sq {
+                    margin-right: 0;
+                }
+            }
+
+            .diag-btns {
+                background-color: #f1f1f1;
+                color: #999;
+                text-transform: capitalize;
+                padding: 6px;
+            }
+
+            .red {
+                color: black;
+            }
+        </style>
+
+        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/categories" handle-as="json" last-response="{{categorias}}"></iron-ajax>
+
+        <iron-ajax id="editCategoryAjax" method="PUT" content-type="application/json" on-response="refresh"></iron-ajax>
+        <iron-ajax id="deleteCategoryAjax" method="DELETE" on-response="refresh"></iron-ajax>
+
+        <h1>Categorías</h1>
+        <br>
+
+        <div>
+            <div class="row">
+                <dom-repeat items="[[categorias.categories]]">
+                    <template>
+                        <div class="col s12 m6 l4 apartado">
+                            <div class="inside-sq">
+                                <a href="/categoria/[[item.slug]]">
+                                    <h3>[[item.name]]</h3>
+                                </a>
+                            </div>
+
+                            <div class="control">
+                                <paper-button class="item-btns">
+                                    <iron-icon class="small-icon" icon="create" on-tap="trigEditDialog" my-slug="[[item.slug]]" my-name="[[item.name]]"></iron-icon>
+                                </paper-button>
+
+                                <paper-button class="item-btns">
+                                    <iron-icon class="small-icon" icon="delete" on-tap="trigDeleteDialog" my-slug="[[item.slug]]" my-name="[[item.name]]"></iron-icon>
+                                </paper-button>
+                            </div>
+
+                        </div>
+                    </template>
+                </dom-repeat>
+            </div>
+        </div>
+
+        <paper-dialog modal id="editdialog">
+            <p>Introduzca el nuevo nombre para la categoría
+                <b>[[selectedName]]</b>
+            </p>
+            <paper-input label="Nuevo nombre" value="{{newName}}"></paper-input>
+            <div class="buttons">
+                <paper-button dialog-dismiss class="diag-btns">Cancelar</paper-button>
+                <paper-button on-tap="editCategory" class="diag-btns red">Guardar</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog modal id="deletedialog">
+            <p>¿Seguro que desea eliminar la categoría
+                <b>[[selectedName]]</b>
+            </p>
+            <div class="buttons">
+                <paper-button dialog-dismiss class="diag-btns">Cancelar</paper-button>
+                <paper-button on-tap="deleteCategory" class="diag-btns red">Eliminar</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+
+    <script>
+        class HemeakiCategories extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-categories';
+            }
+
+            static get properties() {
+                return {
+                    selectedName: String,
+                    selectedSlug: String,
+                    newName: String,
+                    editedObj: {
+                        type: Object,
+                        value: {}
+                    }
+                };
+            }
+
+            trigEditDialog(e) {
+                this.selectedName = e.detail.sourceEvent.target.myName;
+                this.selectedSlug = e.detail.sourceEvent.target.mySlug;
+                this.$.editdialog.open();
+            }
+
+            trigDeleteDialog(e) {
+                this.selectedName = e.detail.sourceEvent.target.myName;
+                this.selectedSlug = e.detail.sourceEvent.target.mySlug;
+                this.$.deletedialog.open();
+            }
+
+            toSlug(s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "-");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                return r;
+            }
+
+            editCategory() {
+                var oldslug = this.selectedSlug;
+                var editslug = this.toSlug(this.newName);
+                this.editedObj.slug = editslug;
+                this.editedObj.name = this.newName;
+                this.$.editCategoryAjax.url = `https://hemeaki-api.herokuapp.com/api/category/${oldslug}`;
+                this.$.editCategoryAjax.body = this.editedObj;
+                this.$.editCategoryAjax.generateRequest();
+                this.newName = null;
+            }
+
+            deleteCategory() {
+                var deleteslug = this.selectedSlug;
+                this.$.deleteCategoryAjax.url = `https://hemeaki-api.herokuapp.com/api/category/${deleteslug}`;
+                this.$.deleteCategoryAjax.generateRequest();
+            }
+
+            refresh() {
+                window.location.reload();
+            }
+
+        }
+
+        window.customElements.define(HemeakiCategories.is, HemeakiCategories);
+    </script>
+</dom-module>

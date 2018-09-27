@@ -1,0 +1,249 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/address-autocomplete/address-autocomplete.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-storage-multiupload.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-storage-upload-task.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
+<dom-module id="hemeaki-add">
+    <template>
+        <style include="shared-styles">
+            iron-image {
+                width: 100px;
+                height: 100px;
+            }
+        </style>
+
+        <iron-ajax id="advertiserAjax" url="https://hemeaki-api.herokuapp.com/api/advertiser" method="POST" content-type="application/json"
+            on-response="postPhotos"></iron-ajax>
+
+        <iron-ajax id="photoAjax" url="https://hemeaki-api.herokuapp.com/api/image" method="POST" content-type="application/json"
+            on-response="refresh"></iron-ajax>
+
+        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/categories" handle-as="json" last-response="{{lista}}"></iron-ajax>
+
+        <h1 style="margin-top: 1em">Añadir anunciante</h1>
+
+        <div class="shadow panel">
+
+            <div class="error-container" style="margin-bottom: 1em;" hidden>
+                <p>Se ha producido un error al registrar anunciante, verifique que todos los campos están llenos y los datos
+                    son correctos</p>
+            </div>
+
+            <div class="succes-container" style="margin-bottom: 1em;" hidden>
+                <p>Anunciante registrado exitosamente</p>
+            </div>
+
+            <iron-image class="avatar" id="avatar" src="{{myUrl}}" preload sizing="cover" placeholder="../assets/user.jpeg"></iron-image>
+
+            <label for="avatar-uploader" class="shadow btn-upload">Foto de perfil</label>
+            <input id="avatar-uploader" type="file" on-change="onAvatarUpload" style="display:none" />
+            <br>
+
+            <paper-input label="Nombre" value="{{formData.name}}"></paper-input>
+
+            <paper-input label="Teléfono" allowed-pattern="[0-9- ]" value="{{formData.tel}}"></paper-input>
+
+            <address-autocomplete id="address" api-key="AIzaSyBo5GkfGaDY3Vfhz-nMwf4oWemPj6uUdUQ"></address-autocomplete>
+
+            <paper-input label="Email" value="{{formData.email}}"></paper-input>
+
+            <paper-input label="Facebook" value="{{formData.facebookName}}"></paper-input>
+
+            <paper-input label="Facebook user ID" value="{{formData.facebookId}}"></paper-input>
+
+            <paper-dropdown-menu label="Categoría" value="{{formData.slugCategory}}">
+                <paper-listbox slot="dropdown-content" selected="1">
+
+                    <template is="dom-repeat" items="{{lista.categories}}">
+                        <paper-item>[[item.name]]</paper-item>
+                    </template>
+
+                </paper-listbox>
+            </paper-dropdown-menu>
+
+            <paper-textarea placeholder="Descripción" value="{{formData.description}}"></paper-textarea>
+
+            <paper-chip-input enter-keys='["enter", "space"]' id="tags"></paper-chip-input>
+
+
+            <firebase-storage-multiupload id="fs" path="/galleries/{{formData.name}}" files="[[files]]" upload-tasks="{{uploadedFiles}}"
+                on-error="catchError" force-unique auto>
+            </firebase-storage-multiupload>
+
+            <label for="file-uploader" class="shadow btn-upload">Subir galería</label>
+            <input id="file-uploader" type="file" on-change="onFileUpload" multiple style="display:none" />
+            <br>
+
+            <template is="dom-repeat" items="[[uploadedFiles]]">
+                <div style="padding: 20px">
+                    <firebase-storage-upload-task task="[[item]]" id="task-[[index]]" bytes-transferred="{{item.bytesTransferred}}" total-bytes="{{item.totalBytes}}"
+                        state="{{item.state}}" download-url="{{item.downloadUrl}}" metadata="{{item.metadata}}" path="{{item.path}}">
+                    </firebase-storage-upload-task>
+
+                    <br>
+
+                    <template is="dom-if" if="[[!isEqual(item.state, 'success')]]">
+                        <paper-progress value="{{item.bytesTransferred}}" min="0" max="{{item.totalBytes}}">
+                        </paper-progress>
+                    </template>
+
+                    <br>
+
+                    <template is="dom-if" if="{{isEqual(item.state, 'success')}}">
+                        <firebase-storage-ref path="{{item.path}}" storage-uri="{{gsUri}}" id="ref-[[index]]" metadata="{{item.refMetadata}}" download-url="{{item.refDownloadUrl}}">
+                        </firebase-storage-ref>
+
+                        <img style="height: 150px;" src="{{item.refDownloadUrl}}" alt="">
+
+                    </template>
+
+                    <br>
+                </div>
+            </template>
+
+            <br>
+            <br>
+            <paper-button on-tap="addCategory" class="red-btn" >Guardar</paper-button>
+
+        </div>
+
+    </template>
+
+    <script>
+
+        class HemeakiAdd extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-add';
+            }
+
+            static get properties() {
+                return {
+                    formData: {
+                        type: Object,
+                        value: {}
+                    },
+
+                    uploadTasks: {
+                        type: Array,
+                        observer: '_uploadTasksChanged'
+                    },
+                    uploadedFiles: {
+                        type: Array,
+                    },
+
+                    myUrl: {
+                        type: String,
+                        value: ''
+                    }
+
+                };
+            }
+
+            quitaacentos(s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "-");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                return r;
+            }
+
+            _setReqBody() {
+                this.formData.slug = this.quitaacentos(this.formData.name);
+                this.formData.parsedAddress = this.$.address.direccion.replace(new RegExp(/\s/g), "+");
+                this.formData.address = this.$.address.direccion;
+                this.formData.slugCategory = this.quitaacentos(this.formData.slugCategory);
+                this.formData.tags = this.$.tags.values.toString();
+                this.formData.avatar = this.myUrl;
+                this.formData.ranking = 5;
+                this.formData.qualifiers = 5;
+                this.$.advertiserAjax.body = this.formData;
+            }
+
+            addCategory() {
+                this._setReqBody();
+                this.$.advertiserAjax.generateRequest();
+            }
+
+            _setImages() {
+                var slug = this.quitaacentos(this.formData.name);
+                var tasks = this.$.fs.uploadTasks;
+                var urls = [];
+
+                for (var index = 0; index < tasks.length; index++) {
+                    this.$.photoAjax.body = {
+                        "route": tasks[index].downloadUrl,
+                        "slugAdvertiser": slug
+                    };
+                    this.$.photoAjax.generateRequest();
+                }
+
+                console.log(urls);
+            }
+
+            postPhotos() {
+                this._setImages();
+            }
+
+            _uploadTasksChanged(uploadTasks) {
+                console.log(uploadTasks);
+            }
+
+            _uploadedFilesChanged(uploadedFiles) {
+                console.log(uploadedFiles);
+            }
+
+            onFileUpload(e) {
+                this.files = e.target.files;
+                console.log(this.files)
+            }
+
+            onAvatarUpload(e) {
+                var file = e.target.files[0];
+
+                var storageRef = firebase.storage().ref('avatars/' + file.name);
+
+                var task = storageRef.put(file);
+
+                task.on('state_changed',
+
+                    function progress(snapshot) {
+                        console.log('Subida en proceso...');
+                    },
+
+                    function error(err) {
+                        console.error('Ha ocurrido un error')
+                    }, () => {
+                        this.myUrl = task.snapshot.downloadURL
+                    }
+
+                    /*{
+                        console.log('Completed');
+                        var url = task.snapshot.downloadURL;
+                    }*/
+                );
+            }
+
+            isEqual(a, b) {
+                return a === b;
+            }
+
+            refresh() {
+                window.location.reload();
+            }
+
+        }
+
+        window.customElements.define(HemeakiAdd.is, HemeakiAdd);
+    </script>
+</dom-module>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8">
     <base href="/">
@@ -8,10 +8,10 @@
     <title>HemeAki</title>
 
     <link rel="icon" href="/assets/logo-bar.png">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
     <meta name="description" content="Sitio de recomendaciones de productos y servicios">
 
-    <meta name="theme-color" content="#fff">
     <link rel="manifest" href="/manifest.json">
 
     <style>
@@ -35,19 +35,16 @@
         padding: 0 16px;
         overflow: visible;
       }
-
     </style>
 
   </head>
 
   <body>
 
-    <hemeaki-app></hemeaki-app> <!-- Pendiente agregar el unresolved -->
+    <hemeaki-app unresolved></hemeaki-app>
 
     <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="import" href="/src/hemeaki-app.html">
-
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
     <script>
       window.performance && performance.mark && performance.mark('index.html');

@@ -1,10 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../bower_components/mp-slider/mp-slider.html">
 <link rel="import" href="../bower_components/photo-gallery/photo-gallery.html">
-<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
-<!--link rel="import" href="../bower_components/photo-gallery/photo-gallery-icon.html"-->
-
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/iron-star-rating/iron-star-rating.html">
 <dom-module id="hemeaki-perfil">
     <template>
         <style include="shared-styles">
@@ -12,212 +11,283 @@
                 display: block;
             }
 
-            @media screen and (max-width: 600px) {
-                :host {
-                    min-height: calc(100vh - 106px);
-                }
-            }
-
-            .container {
-                text-align: center;
-            }
-
-            .thumbnail {
-                height: 150px;
+            iron-image {
                 width: 150px;
-                text-align: center;
+                height: 150px;
                 display: inline-block;
             }
 
-            .contact-item {
+            #myText {
+                position: absolute;
+                left: -9999px;
+            }
+
+            #backgroundcontent {}
+
+            #messengerfab {
+                position: fixed;
+                bottom: 1em;
+                right: 1em;
+                background-color: #0084FF;
+            }
+
+            .poster {
+                width: 100%;
+            }
+
+            a {
+                color: black;
+            }
+
+            .contain {
+                margin: 0 50px;
+                padding: 60px 12px;
+            }
+
+            .icon-data {
+                width: 12px;
+                height: 12px;
+                margin-right: 3px;
+            }
+
+            .thistags {
                 display: inline-block;
-                margin: 10px 0;
+                background-color: #F1F1F1;
+                color: #9D9D9D;
+                padding: 0 8px;
+                margin: 4px 0;
             }
 
             paper-button {
+                margin-left: 10px;
+                text-transform: capitalize;
+            }
+
+            .item-btns {
+                margin-right: 0 !important;
+            }
+
+            .btns-container {
+                float: right;
+            }
+
+            iron-star-rating {
+                position: relative;
+                top: 7px;
+            }
+
+            .gray-text {
+                position: relative;
+                top: 1px;
+            }
+
+            .rating-table {
+                padding: 1em 0;
+                margin-right: 10px;
+            }
+
+            .content-modal {
+                text-align: center;
+            }
+
+            .share-b {
+                width: 100%;
+                margin: 0;
+                color: white;
+                text-transform: capitalize;
+                margin-bottom: 1em;
+                padding: 6px;
+            }
+
+            #fb {
+                background-color: #4267B2;
+            }
+
+            #tw {
+                background-color: #1B95E0;
+            }
+
+            #wa {
+                background-color: #2CB742;
+            }
+
+            #lk {
+                background-color: #FFD700;
+            }
+
+            #rate-btn {
                 background-color: white;
-                color: #666;  
-                font-size: 14px;
-                text-transform: none;
-                margin: 5px;
-                border: 1px #666 solid;
-                font-weight: bold;
-            }
-
-            iron-icon {
-                height: 18px;
-                width: 18px;
-                margin-right: 6px;
-            }
-
-            iron-icon + a {
-                font-size: 14px;
-                margin: 6px;
-            }
-
-            .label {
-                padding-right: 2px;
-                font-size: 18px;
-            }
-
-            .tags-container {
-                margin: 12px 0;
-            }
-
-
-            iron-image {
-                display: block;
-                background-color: white;
-            }
-
-            skeleton-carousel {
-                min-height: 500px;
+                border: 1px #999 solid;
+                margin-left: 10px;
+                padding: 8px 16px !important;
             }
 
             @media screen and (max-width: 600px) {
-                iron-image {
-                    display: block;
-                    background-color: white;
+                .contain {
+                    margin: 0;
+                    padding: 10px 0;
                 }
-
-                skeleton-carousel {
-                    min-height: 300px;
-                }
-            }
-
-            paper-fab {
-                position: fixed;
-                right: 1em;
-                bottom: 1em;
-                background-color: #0087F7;
-            }
-
-            .deletebtn {
-                margin-top: 3em;
-                background-color: #E8172B;
-                color: white;
-                border: none;
-            }
-
-            .red-btn {
-                margin: 0 5px;
-                border: none;
             }
         </style>
 
-        <app-route
-            route="[[route]]"
-            pattern="/:profile"
-            data="{{routeData}}">
+        <app-route route="[[route]]" pattern="/:profile" data="{{routeData}}">
         </app-route>
 
-        <iron-ajax
-            auto 
-            url="https://hemeaki-api.herokuapp.com/api/advertiser/{{routeData.profile}}"
-            handle-as="json"
-            last-response="{{perfil}}"
+        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/advertiser/{{routeData.profile}}" handle-as="json" last-response="{{perfil}}"
             on-response="parseTags"></iron-ajax>
 
-        <iron-ajax
-            auto 
-            url="https://hemeaki-api.herokuapp.com/api/{{routeData.profile}}/images"
-            handle-as="json"
-            last-response="{{fotos}}"></iron-ajax>
+        <iron-ajax id="ratingAjax" url="https://hemeaki-api.herokuapp.com/api/advertiser/{{routeData.profile}}" method="PUT" content-type="application/json"
+            on-response="rateSent"></iron-ajax>
 
-        <iron-ajax
-            id="deleteAjax"
-            method="DELETE"
-            handle-as="json"
-            on-response="redirect"></iron-ajax>
-        
-        <iron-ajax
-            id="deleteImagesAjax"
-            method="DELETE"
-            handle-as="json"
-            on-error="errorDeleteImage"></iron-ajax>
+        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/{{routeData.profile}}/images" handle-as="json" last-response="{{fotos}}"></iron-ajax>
+
+        <iron-media-query query="(min-width: 600px)" query-matches="{{smallScreen}}"></iron-media-query>
 
         <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
 
-        <div class="container">
-            
-            <iron-image src="[[perfil.advertiser.0.avatar]]" class="thumbnail" preload sizing="contain"></iron-image>
-            
-            <h1>[[perfil.advertiser.0.name]]</h1>
+        <div id="backgroundcontent">
+            <div informacion-anunciante class="container">
 
-            <p>[[perfil.advertiser.0.description]]</p>
-            
-            <a href="tel:[[perfil.advertiser.0.tel]]">
-                <paper-button>
-                    <iron-icon src="../assets/whatsapp-logo.png"></iron-icon>
-                    [[perfil.advertiser.0.tel]]
-                </paper-button>
-            </a>
+                <div class="row">
+                    <div class="col s12 m4 l4 right box-padded">
 
-            <a href="mailto:[[perfil.advertiser.0.email]]">
-                <paper-button>
-                    <iron-icon icon="vaadin:at"></iron-icon>
-                    [[perfil.advertiser.0.email]]
-                </paper-button>
-            </a>
+                        <div class="btns-container" hidden$="[[smallScreen]]">
+                            <paper-button class="item-btns">
+                                <iron-icon icon="social:share" class="small-icon" on-tap="trigShareDialog" my-name="[[perfil.advertiser.0.name]]" my-avatar="[[perfil.advertiser.0.avatar]]"
+                                    my-slug="[[perfil.advertiser.0.slug]]"></iron-icon>
+                            </paper-button>
+                            <paper-button class="item-btns">
+                                <iron-icon icon="star" class="star small-icon"></iron-icon>
+                                <span class="inside-btn">[[perfil.advertiser.0.ranking]]</span>
+                            </paper-button>
+                        </div>
 
-            <a href="https://www.facebook.com/[[perfil.advertiser.0.facebookId]]" target="_blank">
-                <paper-button>
-                    <iron-icon icon="vaadin:facebook"></iron-icon>
-                    [[perfil.advertiser.0.facebookName]]
-                </paper-button>
-            </a>
+                        <iron-image src="[[perfil.advertiser.0.avatar]]" preload sizing="contain"></iron-image>
+                    </div>
 
-            <br>
+                    <div class="col s12 m8 l8 box-padded">
 
-            <a href="https://www.google.com.mx/maps/place/[[perfil.advertiser.0.parsedAddress]]" target="_blank">
-                <paper-button>
-                    <iron-icon icon="communication:location-on"></iron-icon>
-                    [[perfil.advertiser.0.address]]
-                </paper-button>
-            </a>
-            
-            <div class="tags-container">
-                <template is="dom-repeat" items="{{tagsArray}}">
-                    <paper-chip single-line>
-                        <div slot="label" class="label" style="font-size: 14px">[[item]]</div>
-                    </paper-chip>
-                </template>
+                        <h1>[[perfil.advertiser.0.name]]</h1>
+
+                        <a href="tel:[[perfil.advertiser.0.tel]]">
+                            <iron-icon src="../assets/phone.png" class="icon-data"></iron-icon>
+                            <span class="gray-text">[[perfil.advertiser.0.tel]] </span>
+                        </a> &nbsp;&nbsp;&nbsp;
+
+                        <a href="mailto:[[perfil.advertiser.0.email]]">
+                            <iron-icon src="../assets/email.png" class="icon-data"></iron-icon>
+                            <span class="gray-text">[[perfil.advertiser.0.email]]</span>
+                        </a> &nbsp;&nbsp;&nbsp;
+                        <br hidden$="[[smallScreen]]">
+                        <a href="https://www.facebook.com/[[perfil.advertiser.0.facebookId]]" target="_blank">
+                            <iron-icon src="../assets/facebook.png" class="icon-data"></iron-icon>
+                            <span class="gray-text">[[perfil.advertiser.0.facebookName]]</span>
+                        </a> &nbsp;&nbsp;&nbsp;
+
+                        <br>
+
+                        <a href="https://www.google.com.mx/maps/place/[[perfil.advertiser.0.parsedAddress]]" target="_blank">
+                            <iron-icon src="../assets/location.png" class="icon-data"></iron-icon>
+                            <span class="gray-text">[[perfil.advertiser.0.address]]</span>
+                        </a>
+
+                        <p>[[perfil.advertiser.0.description]]</p>
+
+                        <p class="gray-text">Servicios:</p>
+
+                        <dom-repeat items="[[tagsArray]]">
+                            <template>
+                                <div class="thistags">[[item]]</div>
+                            </template>
+                        </dom-repeat>
+
+                        <br>
+
+                        <div class="rating-table">
+                            <iron-star-rating value="{{calificacion}}"></iron-star-rating>
+                            <span>[[calificacion]]</span>
+                            <paper-button id="rate-btn" on-tap="sendRate" my-qualifiers="[[perfil.advertiser.0.qualifiers]]" my-ranking="[[perfil.advertiser.0.ranking]]"
+                                class="item-btns">
+                                <span class="inside-btn">Calificar</span>
+                            </paper-button>
+                        </div>
+
+                        <div class="btns-container" hidden$="[[!smallScreen]]">
+                            <paper-button class="item-btns">
+                                <iron-icon icon="social:share" class="small-icon" on-tap="trigShareDialog" my-name="[[perfil.advertiser.0.name]]" my-avatar="[[perfil.advertiser.0.avatar]]"
+                                    my-slug="[[perfil.advertiser.0.slug]]"></iron-icon>
+                            </paper-button>
+                            <paper-button class="item-btns">
+                                <iron-icon icon="star" class="star small-icon"></iron-icon>
+                                <span class="inside-btn">[[perfil.advertiser.0.ranking]]</span>
+                            </paper-button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <photo-gallery>
-                <template is='dom-repeat' items='[[fotos.images]]'>
-                    <div class='item' data-url$='[[item.route]]'></div>
-                </template>
-            </photo-gallery>
-            
-            <a href="https://www.fb.com/msg/{{perfil.advertiser.0.facebookId}}" target="_blank">
-                <paper-fab src="../assets/messenger.png"></paper-fab>
-            </a>
+            <div class="contain">
+                <img class="poster" src="https://images.unsplash.com/photo-1508809571634-ca98bb6625b1?ixlib=rb-0.3.5&s=579a155902aac3e7e4e612c0fec93c45&auto=format&fit=crop&w=1050&q=80"
+                    alt="">
+            </div>
 
-            <br>
-            <template is="dom-if" if="{{storedUser.loggedin}}">
-                <paper-button raised class="deletebtn" on-tap="triggDialog">
-                        <iron-icon icon="delete"></iron-icon>
-                        Eliminar usuario
-                </paper-button>
-            </template>
-            
         </div>
 
-        <paper-dialog id="actions">
-            <p>¿Seguro que dese eliminar la al anunciante '{{perfil.advertiser.0.name}}'?</p>
+        <!-- Dialog for share user -->
+        <paper-dialog id="shareDialog" modal>
             <div class="buttons">
-                <paper-button class="red-btn" dialog-dismiss>Cancelar</paper-button>
-                <paper-button class="red-btn" for-slug="{{perfil.0.slug}}" on-tap="delete">Aceptar</paper-button>
+                
+                <paper-icon-button style="color:red" dialog-dismiss icon="close"></paper-icon-button>
+                
+                <!--paper-button dialog-dismiss>
+                    <iron-icon icon="close"></iron-icon>
+                </paper-button-->
             </div>
+
+            <div class="content-modal">
+                <iron-image src="[[selectedAvatar]]" preload sizing="contain"></iron-image>
+
+                <p>Compartir [[selectedName]]</p>
+
+                <a href$="https://www.facebook.com/sharer/sharer.php?u=https://hemeaki.com/perfil/[[selectedSlug]]">
+                    <paper-button class="share-b" id="fb">Compartir en Facebook</paper-button>
+                </a>
+                <br>
+
+
+                <a href$="http://twitter.com/intent/tweet?url=https://hemeaki.com/perfil/[[selectedSlug]]&text=[[selectedName]]">
+                    <paper-button class="share-b" id="tw">Compartir en Twitter</paper-button>
+                </a>
+                <br>
+
+                <dom-if if="[[!smallScreen]]">
+                    <template>
+                        <a href="whatsapp://send?text=https://hemeaki.com/perfil/[[selectedSlug]]">
+                            <paper-button class="share-b" id="wa">Compartir en WhatsApp</paper-button>
+                        </a>
+                        <br>
+                    </template>
+                </dom-if>
+
+                <paper-button on-tap="copyToClipboard" class="share-b" id="lk">Copiar Link</paper-button>
+                <br>
+
+                <input type="text" id="myText" value="https://hemeaki.com/perfil/{{selectedSlug}}">
+            </div>
+
         </paper-dialog>
 
-        
+        <!-- Fab for message option -->
+        <a href="https://www.fb.com/msg/{{perfil.advertiser.0.facebookId}}" target="_blank">
+            <paper-fab id="messengerfab" src="../assets/messenger.png"></paper-fab>
+        </a>
+
+        <paper-toast id="toast0" text="Texto copiado"></paper-toast>
 
     </template>
 
     <script>
-
         class HemeakiPerfil extends Polymer.Element {
 
             static get is() {
@@ -229,41 +299,32 @@
                     tagsArray: {
                         type: Array
                     },
-                    imgs: Array
+                    imgs: Array,
+                    selectedName: String,
+                    selectedAvatar: String,
+                    selectedSlug: String,
+                    customUrl: String,
+                    calificacion: Number,
+                    modifiedRate: {
+                        type: Object,
+                        value: {}
+                    }
                 };
             }
 
-            /**
-             * Use for one-time configuration of your component after local DOM is initialized. 
-             */
             ready() {
                 super.ready();
-            
-                // When possible, use afterNextRender to defer non-critical
-                // work until after first paint.
-                Polymer.RenderStatus.afterNextRender(this, function() {
-                    this.imgs = [
-                        "https://firebasestorage.googleapis.com/v0/b/hemeaki-https.appspot.com/o/galleries%2FConstrucciones%20BLK%2F1508962131095-AZOTEA%201%20(1).jpg?alt=media&token=cd60aaf3-32bf-4c60-be39-714b93b8845f",
-                        "https://firebasestorage.googleapis.com/v0/b/hemeaki-https.appspot.com/o/galleries%2FConstrucciones%20BLK%2F1508962131097-AZOTEA%202%20(2).jpg?alt=media&token=582c6cab-934d-4edd-a69d-0463f07fad08",
-                        "https://firebasestorage.googleapis.com/v0/b/hemeaki-https.appspot.com/o/galleries%2FConstrucciones%20BLK%2F1508962131099-AZOTEA%203%20(2).jpg?alt=media&token=179e8d46-e7d4-4604-abc7-b8b022333ed6"
-                    ]
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    /*this.$.backgroundcontent.style.backgroundImage =
+                        "url('https://images.unsplash.com/photo-1485905947173-6c548e51181c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e105d1cf2fa7351ecb8c15c6948b46d7&auto=format&fit=crop&w=1074&q=80')";*/
                 });
-            
-            }
-
-
-            showRoute() {
-                console.log(this.routeData);
             }
 
             consult(event) {
                 var tags = event.detail.response[0].tags;
                 this.array = tags.split(",");
                 console.log(this.array);
-            }
-
-            triggDialog() {
-                this.$.actions.open();
             }
 
             deleteImages() {
@@ -281,7 +342,7 @@
                 this.$.deleteAjax.url = `https://hemeaki-api.herokuapp.com/api/advertiser/${slug}`
                 this.$.deleteAjax.generateRequest();
             }
-            
+
             redirect() {
                 window.location = "/panel"
             }
@@ -300,6 +361,46 @@
 
             errorDeleteImage() {
                 console.log('Error al eliminar imagen');
+            }
+
+            trigShareDialog(e) {
+                this.selectedName = e.target.myName;
+                this.selectedAvatar = e.target.myAvatar;
+                this.selectedSlug = e.target.mySlug;
+                this.$.shareDialog.open();
+            }
+
+            copyToClipboard() {
+                var copyText = this.$.myText;
+                copyText.select();
+                document.execCommand("Copy");
+                this.$.toast0.open();
+            }
+
+            sendRate(e) {
+                var pastPeople = e.target.myQualifiers;
+                var newPeople = pastPeople + 1;
+                var pastRanking = e.target.myRanking;
+
+                var pastSum = pastPeople * pastRanking;
+                var newSum = pastSum + this.calificacion;
+
+                var newProm = newSum / newPeople;
+                newProm = Math.round(newProm * 100) / 100;
+
+                this.modifiedRate.ranking = newProm;
+                this.modifiedRate.qualifiers = newPeople;
+
+                this.forGenRequest()
+            }
+
+            forGenRequest() {
+                this.$.ratingAjax.body = this.modifiedRate;
+                this.$.ratingAjax.generateRequest();
+            }
+
+            rateSent() {
+                console.log('Calificación enviada')
             }
 
         }

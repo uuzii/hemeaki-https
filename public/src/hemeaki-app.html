@@ -1,342 +1,459 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-
-<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/iron-icons/communication-icons.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../bower_components/iron-image/iron-image.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
-
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-chip/paper-chip.html">
-<link rel="import" href="../bower_components/paper-chip/paper-chip-input.html">
-<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
-
-<link rel="import" href="../bower_components/vaadin-icons/vaadin-icons.html">
-<link rel="import" href="../bower_components/skeleton-carousel/skeleton-carousel.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
-
-<link rel="import" href="hemeaki-admin.html">
-<link rel="import" href="hemeaki-busqueda.html">
-<link rel="import" href="hemeaki-categoria.html">
-<link rel="import" href="hemeaki-contacto.html">
-<link rel="import" href="hemeaki-inicio.html">
-<link rel="import" href="hemeaki-not-found.html">
-<link rel="import" href="admin/hemeaki-panel.html">
-<link rel="import" href="hemeaki-perfil.html">
-<link rel="import" href="hemeaki-somos.html">
 <link rel="import" href="shared-styles.html">
+
+<link rel="import" href="hemeaki-inicio.html">
 
 <link rel="import" href="my-ga.html">
 
 <dom-module id="hemeaki-app">
-  <template>
-    <style include="shared-styles">
-      :host {
-        display: block;
-      }
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                --paper-input-container-color: #f1f1f1;
+                --paper-input-container-focus-color: #f1f1f1;
+            }
 
-      :root {
-        --paper-input-container-color: #eee;
-        --paper-input-container-focus-color: #eee;
-      }
+            #navbar-logo {
+                height: 32px;
+                position: relative;
+                top: 10px;
+                margin: 0 10px;
+            }
 
-      .sup-nav {
-        padding: 10px;
-      }
+            #search-box {
+                border: 1px transparent solid;
+                /*#d1d1d1*/
+                padding: 0 10px;
+                box-sizing: border-box;
+                background-color: #f1f1f1;
+                border-radius: 50px;
+                color: #111;
+                margin-right: 20px;
+            }
 
-      .inf-nav {
-        padding: 0 10px 10px;
-        width: 100vw;
-        box-sizing: border-box;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
+            #search-box:hover {
+                border: 1px #d1d1d1 solid;
+                /*#d1d1d1*/
+            }
 
-      .sup-nav-mobile {
-        padding: 1em 10px;
-        text-align: center;
-      }
+            #navbar-search-bar {
+                min-width: 600px;
+                padding-top: 6px;
+                padding-bottom: 4px;
+            }
 
-      .nav-icons-mobile {
-        width: 23%;
-        display: inline-block;
-        text-align: center;
-      }
+            #inputsearch {
+                width: 100%;
+                outline: none;
+                border: 0px solid;
+                background-color: transparent;
+                -webkit-appearance: none;
+                font-family: 'Roboto', sans-serif;
+                font-size: 13px;
+            }
 
-      .icons-mobile {
-        color: #666;
-      }
 
-      .search-icon {
-        margin-right: 10px;
-      }
+            #searchicon {
+                color: #999;
+            }
 
-      .main-logo {
-        height: 35px;
-        vertical-align: middle;
-        margin-right: 10px;
-      }
+            #results {
+                width: 300px;
+                display: inline-block;
+                position: absolute;
+                top: 66px;
+                left: 55px;
+                background-color: #eee;
+                padding: 4px 1em;
+                z-index: 1;
+                border-radius: 5px;
+            }
 
-      paper-button {
-        background-color: #E8172B;
-        color: white;
-        width: 120px;
-        height: 18px;
-        padding: 20px;
-        font-size: 14px;
-        text-transform: none;
-        font-family: 'Roboto', sans-serif;
-        margin-right: 3px;;
-      }
 
-      paper-input-container {
-        padding: 0;
-      }
+            .nav-links {
+                padding: 0 12px;
+                color: #999;
+            }
 
-      .input-container {
-        width: 300px;
-        display: inline-block;
-        background-color: #eee;
-        border-radius: 5px;
-        padding: 4px 1em 0 1em;
-      }
+            .nav-links:hover {
+                color: #111;
+            }
 
-      .sup-nav-anchors-desktop {
-        font-size: 16px;
-        margin-left: 1em;
-        color: #666;
-        font-weight: bold;
-      }
+            #btn-logout {
+                margin-left: 6px;
+                padding: 2px 14px;
+            }
 
-      paper-fab {
-        position: fixed;
-        bottom: 5em;
-        right: 1em;
-        background-color: #E8172B;
-      }
+            #btn-logout>a {
+                color: #999;
+            }
 
-      .logout-btn {
-        background-color: white;
-        color: #E8172B;
-        width: auto;
-        float: right;
-      }
+            #btn-logout:hover {
+                color: #111;
+            }
 
-      #results {
-        width: 300px;
-        display: inline-block;
-        position: absolute;
-        top: 66px;
-        left: 55px;
-        background-color: #eee;
-        padding: 4px 1em;
-        z-index: 1;
-        border-radius: 5px;
-      }
-    </style>
+            #btn-logout>a:hover {
+                color: #111;
+            }
 
-    <my-ga key="UA-108457045-1"></my-ga>  
+            paper-button {
+                text-transform: none;
+                min-width: 120px;
+                padding: 6px;
+                color: white;
+                background-color: #E8172B;
+                border-radius: 4px;
+            }
 
-    <app-location route="{{route}}"></app-location>
+            div[inferior-part] {
+                padding: 10px;
+                width: 100vw;
+                box-sizing: border-box;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
 
-    <app-route
-      route="{{route}}"
-      pattern="/:page"
-      data="{{routeData}}"
-      tail="{{subroute}}"></app-route>
+            div[superior-bar-mobile] {
+                text-align: center;
+                --iron-icon-height: 26px;
+                --iron-icon-width: 26px;
+            }
 
-    <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
-    
-    <iron-ajax
-      auto
-      url="https://hemeaki-api.herokuapp.com/api/categories"
-      handle-as="json"
-      last-response="{{lista}}"></iron-ajax>
+            .mobile-icons {
+                display: inline-block;
+                width: 15%;
+                text-align: center;
+            }
 
-    <iron-ajax
-      auto
-      url="https://hemeaki-api.herokuapp.com/api/advertisers"
-      method="GET"
-      content-type="application/json"
-      last-response="{{anunciantes}}"></iron-ajax>
+            .mobile-icons>a {
+                color: #999;
+            }
 
-    <firebase-app
-      auth-domain="hemeaki-nov.firebaseapp.com"
-      database-url="https://hemeaki-nov.firebaseio.com/"
-      api-key="AIzaSyD910FhzBA0JxEQh16lVErsXWVBgwTTbZ4"
-      storage-bucket="hemeaki-nov.appspot.com"
-      messaging-sender-id="391315163212">
-    </firebase-app>
-    
-    <iron-media-query query="(min-width: 600px)" query-matches="{{escritorio}}"></iron-media-query>
+            @media screen and (max-width: 600px) {
+                div[superior-bar-mobile] {
+                    padding: 20px 0 10px;
+                }
+            }
+        </style>
 
-    <div>
-      <template is="dom-if" if="{{escritorio}}">
-        <div class="sup-nav">
-          <a href="/inicio">
-            <img class="main-logo" src="../assets/logo.png" alt="">
-          </a>
-          <div class="shadow input-container">
-            <paper-input label="Buscar" no-label-float value="{{inputSearch}}">
-              <iron-icon class="search-icon" icon="search" slot="prefix"></iron-icon>
-            </paper-input>
-          </div>
+        <my-ga key="UA-108457045-1"></my-ga>
 
-          <template is="dom-if" if="{{inputSearch}}">
-            <div id="results" class="shadow">
-              <p style="color: #666">Resultados para {{inputSearch}}</p>
-              <template is="dom-repeat" items="{{anunciantes.advertisers}}" filter="{{_filter(inputSearch)}}">
-                <a href="/perfil/[[item.slug]]" on-tap="clearBar">
-                  <p>[[item.name]]</p>
-                </a>
-              </template>
+        <!-- app-location and app-route elements provide the state pf the URL for the app -->
+        <app-location route="{{route}}"></app-location>
+        <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+
+        <iron-ajax id="categoriesAjax" url="https://hemeaki-api.herokuapp.com/api/categories" handle-as="json" last-response="{{lista}}"></iron-ajax>
+
+        <iron-ajax id="adversisAjax" url="https://hemeaki-api.herokuapp.com/api/advertisers" method="GET" content-type="application/json"
+            last-response="{{anunciantes}}"></iron-ajax>
+
+        <firebase-app auth-domain="hemeaki-mar.firebaseapp.com" database-url="https://hemeaki-mar.firebaseio.com/" api-key="AIzaSyDKKxeU56P2wbv_Hugn9OHjtnKaZAwWiwA"
+            storage-bucket="hemeaki-mar.appspot.com" messaging-sender-id="310290187675">
+        </firebase-app>
+
+        <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
+
+        <!-- iron-media-query switch the smallScreen according to viewport size -->
+        <iron-media-query query="(min-width: 600px)" query-matches="{{smallScreen}}"></iron-media-query>
+
+        <div>
+            <div superior-part>
+                <div superior-bar-desktop sticky$="[[_shouldShowMenu]]" hidden$="[[_shouldShowMenu]]">
+                    <div>
+                        <div class="inlined">
+                            <a href="/inicio">
+                                <img id="navbar-logo" src="../assets/logo.png" alt="logo hemeaki">
+                            </a>
+                        </div>
+                        <div id="search-box" class="inlined">
+                            <paper-input-container id="navbar-search-bar" no-label-float>
+                                <label slot="label" style="color: #999; font-size: 13px">Buscar</label>
+                                <iron-input slot="input">
+                                    <input id="inputsearch" value="{{inputSearch}}">
+                                </iron-input>
+                                <iron-icon id="searchicon" icon="search" slot="prefix" style="margin-right: 6px;"></iron-icon>
+                            </paper-input-container>
+                        </div>
+
+                        <!-- Results list for search -->
+                        <dom-if if="[[inputSearch]]">
+                            <template>
+                                <div id="results">
+                                    <p>Resultados para {{inputSearch}}</p>
+                                    <dom-repeat>
+                                        <template items="{{anunciantes.advertisers}}" filter="{{_filter(inputSearch)}}">
+                                            <a href="/perfil/[[item.slug]]" on-tap="clearBar">
+                                                <p>[[item.name]]</p>
+                                            </a>
+                                        </template>
+                                    </dom-repeat>
+                                </div>
+                            </template>
+                        </dom-if>
+
+                        <a class="nav-links" href="/somos">¿Quiénes somos?</a>
+                        <a class="nav-links" href="/contacto">Contacto</a>
+                        <dom-if if="[[storedUser.loggedin]]">
+                            <template>
+                                <a class="nav-links" href="/panel">Panel</a>
+                                <div id="btn-logout" class="gray-box inlined">
+                                    <a href="" on-tap="logout">Cerrar sesión</a>
+                                </div>
+                            </template>
+                        </dom-if>
+                    </div>
+                </div>
+
+                <div superior-bar-mobile>
+                    <div hidden$="[[!_shouldShowMenu]]">
+                        <div class="mobile-icons">
+                            <a href="/inicio">
+                                <iron-icon icon="home"></iron-icon>
+                            </a>
+                        </div>
+                        <div class="mobile-icons">
+                            <a href="/busqueda">
+                                <iron-icon icon="search"></iron-icon>
+                            </a>
+                        </div>
+                        <div class="mobile-icons">
+                            <a href="/somos">
+                                <iron-icon icon="info-outline"></iron-icon>
+                            </a>
+                        </div>
+                        <div class="mobile-icons">
+                            <a href="/contacto">
+                                <iron-icon icon="markunread"></iron-icon>
+                            </a>
+                        </div>
+                        <dom-if if="[[storedUser.loggedin]]">
+                            <template>
+                                <div class="mobile-icons">
+                                    <a href="/panel">
+                                        <iron-icon icon="dashboard"></iron-icon>
+                                    </a>
+                                </div>
+                                <div class="mobile-icons">
+                                    <a href="/">
+                                        <iron-icon icon="exit-to-app"></iron-icon>
+                                    </a>
+                                </div>
+                            </template>
+                        </dom-if>
+                    </div>
+                </div>
             </div>
-          </template>
-        
-          <a class="sup-nav-anchors-desktop" href="/somos">¿Quiénes somos?</a>
-          <a class="sup-nav-anchors-desktop" href="/contacto">Contacto</a>
-          
-          <template is="dom-if" if="[[storedUser.loggedin]]">
-            <a href="/admin">
-              <paper-button raised class="logout-btn" on-tap="logout">Cerrar sesión</paper-button>
-            </a>
-          </template>
-          
-        </div>
-      </template>
-      
-      <template is="dom-if" if="{{!escritorio}}">
-        <div class="sup-nav-mobile">
-          <div class="nav-icons-mobile"><a href="/inicio"><iron-icon class="icons-mobile" icon="home"></iron-icon></a></div>
-          <div class="nav-icons-mobile"><a href="/busqueda"><iron-icon class="icons-mobile" icon="search"></iron-icon></a></div>
-          <div class="nav-icons-mobile"><a href="/somos"><iron-icon class="icons-mobile" icon="info"></iron-icon></a></div>
-          <div class="nav-icons-mobile"><a href="/contacto"><iron-icon class="icons-mobile" icon="markunread"></iron-icon></a></div>
-        </div>
-      </template>
 
-      <div class="inf-nav">
-        <template is="dom-repeat" items="{{lista.categories}}">
-          <a href="/categorias/[[item.slug]]">
-            <paper-button raised>[[item.name]]</paper-button> 
-          </a>
-        </template>
-      </div>
-    </div>
-
-    <div>
-      <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
-        <hemeaki-inicio name="inicio"></hemeaki-inicio>
-        <hemeaki-categoria route="[[subroute]]" name="categorias"></hemeaki-categoria>
-        <hemeaki-perfil route="[[subroute]]" name="perfil"></hemeaki-perfil>
-        <hemeaki-contacto name="contacto"></hemeaki-contacto>
-        <hemeaki-busqueda name="busqueda"></hemeaki-busqueda>
-        <hemeaki-panel name="panel"></hemeaki-panel>
-        <hemeaki-somos name="somos"></hemeaki-somos>
-        <hemeaki-admin name="admin"></hemeaki-admin>
-        <hemeaki-not-found name="not-found"></hemeaki-not-found>
-      </iron-pages>
-    </div>
-
-    <template is="dom-if" if="{{!escritorio}}">
-      <template is="dom-if" if="[[storedUser.loggedin]]">
-        <div class="sup-nav-mobile" style="background-color: #E8172B">
-          <div class="nav-icons-mobile"><a href=""><iron-icon class="icons-mobile" icon="exit-to-app" on-tap="logout" style="color: white"></iron-icon></a></div>
-          <div class="nav-icons-mobile"><a href="/panel"><iron-icon class="icons-mobile" icon="dashboard" style="color: white"></iron-icon></a></div>
+            <div inferior-part>
+                <div>
+                    <dom-repeat items="{{lista.categories}}">
+                        <template>
+                            <a href="/categoria/[[item.slug]]">
+                                <paper-button>[[item.name]]</paper-button>
+                            </a>
+                        </template>
+                    </dom-repeat>
+                </div>
+            </div>
         </div>
-      </template>
-    </template>
-    
-    <template is="dom-if" if="{{escritorio}}">
-      <template is="dom-if" if="[[storedUser.loggedin]]">
-        <a href="/panel">
-          <paper-fab icon="dashboard"></paper-fab>
-        </a>
-      </template>
+
+
+        <!-- list of different views can be selected -->
+        <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="not-found">
+            <!-- Home view, only contains an image, most important elements for navigate are the categories in navbar -->
+            <hemeaki-inicio name="inicio"></hemeaki-inicio>
+            <!-- Category view, is a template for charge information about advertisers of this cat -->
+            <hemeaki-categoria route="[[subroute]]" name="categoria"></hemeaki-categoria>
+            <!-- Profile view, template for show advertiser information -->
+            <hemeaki-perfil route="[[subroute]]" name="perfil"></hemeaki-perfil>
+            <!-- Contact view, contains the contact form -->
+            <hemeaki-contacto name="contacto"></hemeaki-contacto>
+            <!-- Search view, contains the input search element for do this action in mobile -->
+            <hemeaki-busqueda name="busqueda"></hemeaki-busqueda>
+            <!-- Panel view, contains all views for admin -->
+            <hemeaki-panel name="panel"></hemeaki-panel>
+            <!-- About view, contains info about the company -->
+            <hemeaki-somos name="somos"></hemeaki-somos>
+            <!-- Admin view, contains the login panel -->
+            <hemeaki-admin name="admin"></hemeaki-admin>
+            <!-- 404 view, contains a view in case of not found page -->
+            <hemeaki-not-found name="not-found"></hemeaki-not-found>
+        </iron-pages>
+
     </template>
 
-  </template>
+    <script>
+        class HemeakiApp extends Polymer.Element {
 
-  <script>
+            static get is() {
+                return 'hemeaki-app';
+            }
+            static get properties() {
+                return {
+                    page: {
+                        type: String,
+                        reflectToAttribute: true,
+                        observer: '_pageChanged'
+                    },
+                    storedUser: Object,
+                    inputSearch: String,
+                    _shouldShowMenu: {
+                        computed: '_computeShouldShowMenu(page, smallScreen)'
+                    },
+                };
+            }
 
-    class HemeakiApp extends Polymer.Element {
+            connectedCallback() {
+                super.connectedCallback();
+                /* Se dispara este evento cuando toda la app ha cargado, esto sirve para que
+                desaparezca el anillo de carga */
+                this.dispatchEvent(new CustomEvent('kick', {
+                    detail: {
+                        kicked: true
+                    }
+                }));
+            }
 
-      static get is() { return 'hemeaki-app'; }
-      static get properties() {
-        return {
-          storedUser: Object,
-          inputSearch: String
-        };
-      }
+            static get observers() {
+                return [
+                    '_routePageChanged(routeData.page)'
+                ]
+            }
 
-      connectedCallback() {
-        super.connectedCallback();
-        /* Se dispara este evento cuando toda la app ha cargado, esto sirve para que
-           desaparezca el anillo de carga */
-        this.dispatchEvent(new CustomEvent('kick', {detail: {kicked: true}}));
-      }
+            constructor() {
+                super();
+                window.performance && performance.mark && performance.mark('hemeaki-app.created');
+            }
 
-      static get observers() { return [
-        '_routePageChanged(routeData.page)'
-      ]}
+            ready() {
+                super.ready();
+                // Custom elements polyfill safe way to indicate an element has been upgraded.
+                this.removeAttribute('unresolved');
+                // listen for custom events
+                this.addEventListener('dom-change', (e) => this._domChange(e));
+                this.addEventListener('show-invalid-url-warning', (e) => this._onFallbackSelectionTriggered(e));
 
-      _routePageChanged(page) {
-        this.page = page || 'inicio';
-      }
+                this.$.categoriesAjax.generateRequest();
+                this.$.adversisAjax.generateRequest();
+            }
 
-      _pageChanged(page, oldPage) {
-        if (page != null) {
-          // home route is eagerly loaded
-          if (page == 'inicio') {
-            this._pageLoaded(Boolean(oldPage));
-          // other routes are lazy loaded
-          } else {
-            // When a load failed, it triggered a 404 which means we need to
-            // eagerly load the 404 page definition
-            let cb = this._pageLoaded.bind(this, Boolean(oldPage));
-            Polymer.importHref(
-              this.resolveUrl('hemeaki-' + page + '.html'),
-              cb, cb, true);
-          }
+            _routePageChanged(page) {
+                this.page = page || 'inicio';
+            }
+
+            _pageChanged(page, oldPage) {
+                if (page != null) {
+                    // home route is eagerly loaded
+                    if (page == 'inicio') {
+                        this._pageLoaded(Boolean(oldPage));
+                        // other routes are lazy loaded
+                    } else {
+                        // When a load failed, it triggered a 404 which means we need to
+                        // eagerly load the 404 page definition
+                        let cb = this._pageLoaded.bind(this, Boolean(oldPage));
+                        Polymer.importHref(
+                            this.resolveUrl('hemeaki-' + page + '.html'),
+                            cb, cb, true);
+                    }
+                }
+            }
+
+            _filter(val) {
+                if (!val) {
+                    // set filter to null to disable filtering
+                    return null;
+                } else {
+                    // return a filter function for the current search val
+                    val = val.toLowerCase();
+                    return function (item) {
+                        var nam = item.name.toLowerCase();
+                        //var desc = item.description.toLowerCase();
+                        return (nam.indexOf(val) != -1 /*|| desc.indexOf(val) != -1*/ );
+                    };
+                }
+            }
+
+            _pageLoaded(shouldResetLayout) {
+                this._ensureLazyLoaded();
+            }
+
+            _ensureLazyLoaded() {
+                // load lazy resources after render and set `loadComplete` when done.
+                if (!this.loadComplete) {
+                    Polymer.RenderStatus.afterNextRender(this, () => {
+                        Polymer.importHref(this.resolveUrl('lazy-resources.html'), () => {
+                            // Register service worker if supported.
+                            if ('serviceWorker' in navigator) {
+                                navigator.serviceWorker.register('service-worker.js', {
+                                    scope: '/'
+                                });
+                            }
+                            this._notifyNetworkStatus();
+                            this.loadComplete = true;
+                        });
+                    });
+                }
+            }
+
+            _notifyNetworkStatus() {
+                let oldOffline = this.offline;
+                this.offline = !navigator.onLine;
+                // Show the snackbar if the user is offline when starting a new session
+                // or if the network status changed.
+                if (this.offline || (!this.offline && oldOffline === true)) {
+                    if (!this._networkSnackbar) {
+                        this._networkSnackbar = document.createElement('shop-snackbar');
+                        this.root.appendChild(this._networkSnackbar);
+                    }
+                    this._networkSnackbar.innerHTML = this.offline ?
+                        'You are offline' : 'You are online';
+                    this._networkSnackbar.open();
+                }
+            }
+
+            _domChange(e) {
+                if (window.performance && performance.mark && !this.__loggedDomChange) {
+                    let target = e.composedPath()[0];
+                    let host = target.getRootNode().host;
+                    if (host && host.localName.match(this.page)) {
+                        this.__loggedDomChange = true;
+                        performance.mark(host.localName + '.domChange');
+                    }
+                }
+            }
+
+            _onFallbackSelectionTriggered() {
+                this.page = 'not-found';
+            }
+
+            _computeShouldShowMenu(page, smallScreen) {
+                return (page === 'inicio' || page === 'categoria' || page === 'perfil' || page === 'contacto' ||
+                        page === 'busqueda' || page === 'panel' || page === 'admin' || page === 'somos') && !
+                    smallScreen;
+            }
+
+            clearBar() {
+                this.inputSearch = null;
+            }
+
+            logout() {
+                this.storedUser = null;
+                window.location = '/inicio'
+            }
+
         }
-      }
 
-      _filter(val) {
-        if (!val) {
-          // set filter to null to disable filtering
-          return null;
-        } else {
-          // return a filter function for the current search val
-          val = val.toLowerCase();
-          return function(item) {
-            var nam = item.name.toLowerCase();
-            //var desc = item.description.toLowerCase();
-            return (nam.indexOf(val) != -1 /*|| desc.indexOf(val) != -1*/);
-          };
-        }
-      }
-
-      clearBar() {
-        this.inputSearch = null;
-      }
-      
-      logout() {
-        this.storedUser = null;
-        window.location = '/inicio'
-      }
-
-    }
-
-    window.customElements.define(HemeakiApp.is, HemeakiApp);
-  </script>
+        window.customElements.define(HemeakiApp.is, HemeakiApp);
+    </script>
 </dom-module>

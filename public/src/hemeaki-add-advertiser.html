@@ -1,0 +1,213 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/address-autocomplete/address-autocomplete.html">
+
+<dom-module id="hemeaki-add-advertiser">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                --paper-input-container-color: #999;
+                --paper-input-container-focus-color: #000;
+            }
+
+            #avatar {
+                width: 200px;
+                height: 200px;
+            }
+
+            .black {
+                background-color: black;
+                color: white;
+                width: 100%;
+                margin-right: 0;
+                text-transform: capitalize;
+            }
+        </style>
+
+        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/categories" handle-as="json" last-response="{{list}}"></iron-ajax>
+
+        <iron-ajax id="advertiserAjax" url="https://hemeaki-api.herokuapp.com/api/advertiser" method="POST" content-type="application/json"
+            on-response="refresh" on-error="notPublished"></iron-ajax>
+
+        <h1>Añadir anunciante</h1><br>
+
+        <div>
+
+            <div id="errordiv" class="error-container" hidden>
+                <p>Se ha producido un error al registrar anunciante, verifique que todos los campos están llenos y los datos
+                    son correctos</p>
+            </div>
+
+            <div class="row">
+                <div class="col s12 m5 l3">
+                    <iron-image id="avatar" src="{{myUrl}}" preload sizing="cover" placeholder="../assets/user.jpeg"></iron-image>
+                    <br>
+                    <label for="avatar-uploader" id="uploadlogobtn">Subir logo</label>
+                    <label for="avatar-uploader" id="changelogobtn" hidden>Cambiar logo</label>
+                    <input id="avatar-uploader" type="file" on-change="onAvatarUpload" style="display:none" />
+                </div>
+
+                <div class="col s12 m7 l9">
+                    <paper-input label="Nombre" value="{{formData.name}}"></paper-input>
+                    <paper-input label="Teléfono" allowed-pattern="[0-9- ]" value="{{formData.tel}}"></paper-input>
+                    <paper-input label="Email" value="{{formData.email}}"></paper-input>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <address-autocomplete id="address" api-key="AIzaSyBo5GkfGaDY3Vfhz-nMwf4oWemPj6uUdUQ"></address-autocomplete>
+                    <paper-input label="Facebook" value="{{formData.facebookName}}"></paper-input>
+                    <paper-input label="Facebook user ID" value="{{formData.facebookId}}"></paper-input>
+
+                    <paper-dropdown-menu label="Categoría" value="{{formData.slugCategory}}">
+                        <paper-listbox slot="dropdown-content" selected="0">
+                            <dom-repeat items="[[list.categories]]">
+                                <template>
+                                    <paper-item>[[item.name]]</paper-item>
+                                </template>
+                            </dom-repeat>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+
+                    <paper-textarea placeholder="Descripción" value="{{formData.description}}"></paper-textarea>
+                    <paper-chip-input enter-keys='["enter"]' id="tags"></paper-chip-input>
+                    <br><br>
+                    <paper-button on-tap="addAdvertiser" class="black">Guardar</paper-button>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        class HemeakiAddAdvertiser extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-add-advertiser';
+            }
+
+            static get properties() {
+                return {
+                    formData: {
+                        type: Object,
+                        value: {}
+                    },
+
+                    uploadTasks: {
+                        type: Array,
+                        observer: '_uploadTasksChanged'
+                    },
+                    uploadedFiles: {
+                        type: Array,
+                    },
+
+                    myUrl: {
+                        type: String,
+                        value: ''
+                    },
+
+                    myFullpath: {
+                        type: String,
+                        value: ''
+                    }
+                };
+            }
+
+            quitaacentos(s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "-");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                return r;
+            }
+
+            validate(value, re) {
+                if (re === undefined) {
+                    return value !== undefined && value !== '';
+                }
+                return re.test(value);
+            }
+
+            _setReqBody() {
+                var form = this.formData;
+                form.slug = this.quitaacentos(form.name);
+                form.parsedAddress = this.$.address.direccion.replace(new RegExp(/\s/g), "+");
+                form.address = this.$.address.direccion;
+                form.slugCategory = this.quitaacentos(form.slugCategory);
+                form.tags = this.$.tags.values.toString();
+                form.avatar = this.myUrl;
+                form.ranking = 0;
+                form.qualifiers = 0;
+                
+                if (!this.validate(form.avatar) || !this.validate(form.name) ||
+                    !this.validate(form.tel) || !this.validate(form.email) ||
+                    !this.validate(form.address) || !this.validate(form.facebookName) || 
+                    !this.validate(form.facebookId) || !this.validate(form.slugCategory) || 
+                    !this.validate(form.tags) || !this.validate(form.facebookName) ) {
+
+                    this.$.errordiv.hidden = false;
+                    return;
+                }
+
+                this.$.errordiv.hidden = true;
+                this.$.advertiserAjax.body = this.formData;
+            }
+
+            addAdvertiser() {
+                this._setReqBody();
+                this.$.advertiserAjax.generateRequest();
+            }
+
+            onAvatarUpload(e) {
+                if (this.myFullpath != '') {
+                    // Create a reference to the file to delete
+                    var dinnerRef = firebase.storage().ref(this.myFullpath);
+                    // Delete the file
+                    dinnerRef.delete().then(() => {
+                        console.log('Borrado con éxito');
+                        this.myUrl = '../assets/user.jpeg';
+                    }).catch(function (error) {
+                        console.log('Uh-oh, an error occurred!');
+                    });
+                }
+
+                var file = e.target.files[0];
+                var storageRef = firebase.storage().ref('avatars/' + file.name);
+                var task = storageRef.put(file);
+
+                task.on('state_changed',
+                    function progress(snapshot) {
+                        console.log('Subida en proceso...');
+                    },
+
+                    function error(err) {
+                        console.error('Ha ocurrido un error')
+                    }, () => {
+                        this.myUrl = task.snapshot.downloadURL;
+                        this.myFullpath = task.snapshot.metadata.fullPath;
+                        this.$.uploadlogobtn.hidden = true;
+                        this.$.changelogobtn.hidden = false;
+                    }
+                );
+            }
+
+            notPublished() {
+                this.$.errordiv.hidden = false;
+                console.error('Error to post');
+            }
+
+            refresh() {
+                console.log('Its posted');
+                window.location.reload();
+            }
+
+        }
+
+        window.customElements.define(HemeakiAddAdvertiser.is, HemeakiAddAdvertiser);
+    </script>
+</dom-module>

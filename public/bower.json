@@ -35,7 +35,10 @@
     "mp-slider": "mpachnis/mp-slider#^2.0.2",
     "plastic-image": "mlisook/plastic-image#^1.0.12",
     "image-carousel": "a1626/image-carousel#^2.0.0",
-    "photo-gallery": "supachailllpay/photo-gallery#^2.0.1"
+    "photo-gallery": "supachailllpay/photo-gallery#^2.0.1",
+    "cvitaede-starsrating": "manufosela/cvitaede-starsrating#^2.1.6",
+    "paper-toast": "PolymerElements/paper-toast#^2.1.0",
+    "iron-star-rating": "chadweimer/iron-star-rating#^2.0.0"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",

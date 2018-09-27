@@ -1,0 +1,82 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+
+<link rel="import" href="hemeaki-advertisers.html">
+<link rel="import" href="hemeaki-add-advertiser.html">
+<link rel="import" href="hemeaki-categories.html">
+<link rel="import" href="hemeaki-add-category.html">
+<link rel="import" href="hemeaki-contacts.html">
+
+<dom-module id="hemeaki-panel">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+
+            .admin-panel-list {
+                display: block;
+                text-decoration: underline;
+            }
+        </style>
+
+        <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
+
+        <div>
+
+            <dom-if if="[[storedUser.loggedin]]">
+                <template>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col s12 m4 l3">
+                                <h2>Administrador</h2>
+                                <iron-selector class="menuSelector" attr-for-selected="name" selected="{{seleccionado}}">
+                                    <a name="advertisers" class="admin-panel-list">Lista de Anunciantes</a>
+                                    <a name="add-advertiser" class="admin-panel-list">Añadir anunciante</a>
+                                    <a name="categories" class="admin-panel-list">Lista de Categorías</a>
+                                    <a name="add-category" class="admin-panel-list">Añadir Categoría</a>
+                                    <a name="contacts" class="admin-panel-list">Solicitudes de contacto</a>
+                                </iron-selector>
+                                <a href="" class="admin-panel-list">Cerrar sesión</a>
+                                <br><br><br>
+                            </div>
+                            <div class="col s12 m8 l9">
+                                <iron-pages attr-for-selected="name" selected="{{seleccionado}}" fallback-selection="contacts">
+                                    <hemeaki-advertisers name="advertisers"></hemeaki-advertisers>
+                                    <hemeaki-add-advertiser name="add-advertiser"></hemeaki-add-advertiser>
+                                    <hemeaki-categories name="categories"></hemeaki-categories>
+                                    <hemeaki-add-category name="add-category"></hemeaki-add-category>
+                                    <hemeaki-contacts name="contacts"></hemeaki-contacts>
+                                </iron-pages>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </dom-if>
+
+            <dom-if if="[[!storedUser.loggedin]]">
+
+                <template>
+                    <p>Debes
+                        <a href="/admin">iniciar sesión</a> para acceder al panel de administrador</p>
+                </template>
+
+            </dom-if>
+
+        </div>
+
+    </template>
+
+    <script>
+        class HemeakiPanel extends Polymer.Element {
+
+            static get is() {
+                return 'hemeaki-panel';
+            }
+
+        }
+
+        window.customElements.define(HemeakiPanel.is, HemeakiPanel);
+    </script>
+</dom-module>

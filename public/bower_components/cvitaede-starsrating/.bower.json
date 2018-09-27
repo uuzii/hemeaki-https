@@ -1,0 +1,28 @@
+{
+  "name": "cvitaede-starsrating",
+  "main": "cvitaede-starsrating.html",
+  "author": "@manufosela",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0"
+  },
+  "devDependencies": {
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+  },
+  "resolutions": {
+    "polymer": "^2.0.0"
+  },
+  "homepage": "https://github.com/manufosela/cvitaede-starsrating",
+  "version": "2.1.6",
+  "_release": "2.1.6",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.1.6",
+    "commit": "7a7eb327f884471c39abaca4662d77e802317e9d"
+  },
+  "_source": "https://github.com/manufosela/cvitaede-starsrating.git",
+  "_target": "^2.1.6",
+  "_originalSource": "manufosela/cvitaede-starsrating",
+  "_direct": true
+}
