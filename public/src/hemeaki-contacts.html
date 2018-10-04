@@ -48,6 +48,10 @@
             }
         </style>
 
+        <iron-localstorage name="user-storage" value="{{storedUser}}"></iron-localstorage>
+
+        <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
+
         <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/contacts" handle-as="json" last-response="{{contactos}}"></iron-ajax>
 
         <iron-ajax id="deletecontactAjax" method="DELETE" handle-as="json" on-response="refresh"></iron-ajax>
@@ -66,15 +70,17 @@
                                 <p>
                                     <a href="mailto:[[item.email]]">
                                         <iron-icon src="../assets/email.png" class="small-icon"></iron-icon>
-                                        [[item.email]]</a>
+                                        [[item.email]]
+                                    </a>
                                     <br>
                                     <br>
                                     <a href="tel:[[item.tel]]">
                                         <iron-icon src="../assets/phone.png" class="small-icon"></iron-icon>
-                                        [[item.tel]]</a>
+                                        [[item.tel]]
+                                    </a>
                                 </p>
                                 <p>
-                                    <i>Registrado el: </i>
+                                    <i>Registrado el: [[item.date]]</i>
                                 </p>
                             </div>
 
@@ -112,6 +118,7 @@
 
             static get properties() {
                 return {
+                    storedUser: Object,
                     selectedContact: {
                         type: String
                     },
@@ -128,6 +135,7 @@
             }
 
             delete(e) {
+                this.$.deletecontactAjax.headers = {Authorization: this.storedUser.token};
                 var id = this.selectedContact;
                 this.$.deletecontactAjax.url = `https://hemeaki-api.herokuapp.com/api/contact/${id}`
                 this.$.deletecontactAjax.generateRequest();

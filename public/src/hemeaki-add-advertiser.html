@@ -15,6 +15,11 @@
                 height: 200px;
             }
 
+            #background {
+                width: 100%;
+                height: 200px;
+            }
+
             .black {
                 background-color: black;
                 color: white;
@@ -24,17 +29,22 @@
             }
         </style>
 
+        <iron-localstorage name="user-storage" value="{{storedUser}}"></iron-localstorage>
+
+        <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
+
         <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/categories" handle-as="json" last-response="{{list}}"></iron-ajax>
 
-        <iron-ajax id="advertiserAjax" url="https://hemeaki-api.herokuapp.com/api/advertiser" method="POST" content-type="application/json"
-            on-response="refresh" on-error="notPublished"></iron-ajax>
+        <iron-ajax id="advertiserAjax" url="https://hemeaki-api.herokuapp.com/api/advertiser" method="POST"
+            content-type="application/json" on-response="refresh" on-error="notPublished"></iron-ajax>
 
         <h1>Añadir anunciante</h1><br>
 
         <div>
 
             <div id="errordiv" class="error-container" hidden>
-                <p>Se ha producido un error al registrar anunciante, verifique que todos los campos están llenos y los datos
+                <p>Se ha producido un error al registrar anunciante, verifique que todos los campos están llenos y los
+                    datos
                     son correctos</p>
             </div>
 
@@ -49,6 +59,7 @@
 
                 <div class="col s12 m7 l9">
                     <paper-input label="Nombre" value="{{formData.name}}"></paper-input>
+                    <paper-input label="Descripción" value="{{formData.description}}"></paper-input>
                     <paper-input label="Teléfono" allowed-pattern="[0-9- ]" value="{{formData.tel}}"></paper-input>
                     <paper-input label="Email" value="{{formData.email}}"></paper-input>
                 </div>
@@ -73,6 +84,26 @@
                     <paper-textarea placeholder="Descripción" value="{{formData.description}}"></paper-textarea>
                     <paper-chip-input enter-keys='["enter"]' id="tags"></paper-chip-input>
                     <br><br>
+                </div>
+
+                <div class="col s12">
+                    <iron-image id="background" src="{Promo}}" preload sizing="cover" placeholder="../assets/background.jpg"></iron-image>
+                    <br>
+                    <label for="bg-uploader" id="uploadbgbtn">Subir banner</label>
+                    <label for="bg-uploader" id="changebgbtn" hidden>Cambiar banner</label>
+                    <input id="bg-uploader" type="file" on-change="onBgUpload" style="display:none" />
+                </div>
+
+                <div class="col s12">
+                    <iron-image id="promo" src="{{myPromoUrl}}" preload sizing="cover" placeholder="../assets/background.jpg"></iron-image>
+                    <br>
+                    <label for="promo-uploader" id="uploadpromobtn">Subir promo</label>
+                    <label for="promo-uploader" id="changepromobtn" hidden>Cambiar promo</label>
+                    <input id="promo-uploader" type="file" on-change="onPromoUpload" style="display:none" />
+                </div>
+
+                <div class="col s12">
+                    <br><br>
                     <paper-button on-tap="addAdvertiser" class="black">Guardar</paper-button>
                 </div>
             </div>
@@ -89,6 +120,8 @@
 
             static get properties() {
                 return {
+                    storedUser: Object,
+
                     formData: {
                         type: Object,
                         value: {}
@@ -107,7 +140,27 @@
                         value: ''
                     },
 
+                    myBgUrl: {
+                        type: String,
+                        value: ''
+                    },
+
+                    myPromoUrl: {
+                        type: String,
+                        value: ''
+                    },
+
                     myFullpath: {
+                        type: String,
+                        value: ''
+                    },
+
+                    myBgFullpath: {
+                        type: String,
+                        value: ''
+                    },
+
+                    myPromoFullpath: {
                         type: String,
                         value: ''
                     }
@@ -138,17 +191,18 @@
                 form.slug = this.quitaacentos(form.name);
                 form.parsedAddress = this.$.address.direccion.replace(new RegExp(/\s/g), "+");
                 form.address = this.$.address.direccion;
+                form.background = `${this.myBgUrl}, ${this.myPromoUrl}`;
                 form.slugCategory = this.quitaacentos(form.slugCategory);
                 form.tags = this.$.tags.values.toString();
                 form.avatar = this.myUrl;
                 form.ranking = 0;
                 form.qualifiers = 0;
-                
+
                 if (!this.validate(form.avatar) || !this.validate(form.name) ||
                     !this.validate(form.tel) || !this.validate(form.email) ||
-                    !this.validate(form.address) || !this.validate(form.facebookName) || 
-                    !this.validate(form.facebookId) || !this.validate(form.slugCategory) || 
-                    !this.validate(form.tags) || !this.validate(form.facebookName) ) {
+                    !this.validate(form.address) || !this.validate(form.facebookName) ||
+                    !this.validate(form.facebookId) || !this.validate(form.slugCategory) ||
+                    !this.validate(form.tags) || !this.validate(form.facebookName)) {
 
                     this.$.errordiv.hidden = false;
                     return;
@@ -159,6 +213,7 @@
             }
 
             addAdvertiser() {
+                this.$.advertiserAjax.headers = { Authorization: this.storedUser.token };
                 this._setReqBody();
                 this.$.advertiserAjax.generateRequest();
             }
@@ -192,6 +247,72 @@
                         this.myFullpath = task.snapshot.metadata.fullPath;
                         this.$.uploadlogobtn.hidden = true;
                         this.$.changelogobtn.hidden = false;
+                    }
+                );
+            }
+
+            onBgUpload(e) {
+                if (this.myBgFullpath != '') {
+                    // Create a reference to the file to delete
+                    var dinnerRef = firebase.storage().ref(this.myBgFullpath);
+                    // Delete the file
+                    dinnerRef.delete().then(() => {
+                        console.log('Borrado con éxito');
+                        this.myBgUrl = '../assets/background.jpg';
+                    }).catch(function (error) {
+                        console.log('Uh-oh, an error occurred!');
+                    });
+                }
+
+                var file = e.target.files[0];
+                var storageRef = firebase.storage().ref('backgrounds/' + file.name);
+                var task = storageRef.put(file);
+
+                task.on('state_changed',
+                    function progress(snapshot) {
+                        console.log('Subida en proceso...');
+                    },
+
+                    function error(err) {
+                        console.error('Ha ocurrido un error')
+                    }, () => {
+                        this.myBgUrl = task.snapshot.downloadURL;
+                        this.myBgFullpath = task.snapshot.metadata.fullPath;
+                        this.$.uploadbgbtn.hidden = true;
+                        this.$.changebgbtn.hidden = false;
+                    }
+                );
+            }
+
+            onPromoUpload(e) {
+                if (this.myPromoFullpath != '') {
+                    // Create a reference to the file to delete
+                    var dinnerRef = firebase.storage().ref(this.myPromoFullpath);
+                    // Delete the file
+                    dinnerRef.delete().then(() => {
+                        console.log('Borrado con éxito');
+                        this.myPromoUrl = '../assets/background.jpg';
+                    }).catch(function (error) {
+                        console.log('Uh-oh, an error occurred!');
+                    });
+                }
+
+                var file = e.target.files[0];
+                var storageRef = firebase.storage().ref('promos/' + file.name);
+                var task = storageRef.put(file);
+
+                task.on('state_changed',
+                    function progress(snapshot) {
+                        console.log('Subida en proceso...');
+                    },
+
+                    function error(err) {
+                        console.error('Ha ocurrido un error')
+                    }, () => {
+                        this.myPromoUrl = task.snapshot.downloadURL;
+                        this.myPromoFullpath = task.snapshot.metadata.fullPath;
+                        this.$.uploadpromobtn.hidden = true;
+                        this.$.changepromobtn.hidden = false;
                     }
                 );
             }

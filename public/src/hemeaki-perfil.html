@@ -22,8 +22,6 @@
                 left: -9999px;
             }
 
-            #backgroundcontent {}
-
             #messengerfab {
                 position: fixed;
                 bottom: 1em;
@@ -139,7 +137,7 @@
         <iron-ajax id="ratingAjax" url="https://hemeaki-api.herokuapp.com/api/advertiser/{{routeData.profile}}" method="PUT" content-type="application/json"
             on-response="rateSent"></iron-ajax>
 
-        <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/{{routeData.profile}}/images" handle-as="json" last-response="{{fotos}}"></iron-ajax>
+        <!--iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/{{routeData.profile}}/images" handle-as="json" last-response="{{fotos}}"></iron-ajax-->
 
         <iron-media-query query="(min-width: 600px)" query-matches="{{smallScreen}}"></iron-media-query>
 
@@ -228,8 +226,13 @@
             </div>
 
             <div class="contain">
-                <img class="poster" src="https://images.unsplash.com/photo-1508809571634-ca98bb6625b1?ixlib=rb-0.3.5&s=579a155902aac3e7e4e612c0fec93c45&auto=format&fit=crop&w=1050&q=80"
-                    alt="">
+                <img class="poster" src$="[[_getBanner(perfil.advertiser.0.background)]]" alt="">
+            </div>
+
+            <br>
+
+            <div class="contain">
+                <img class="poster" src$="[[_getPromo(perfil.advertiser.0.background)]]" alt="">
             </div>
 
         </div>
@@ -325,6 +328,16 @@
                 var tags = event.detail.response[0].tags;
                 this.array = tags.split(",");
                 console.log(this.array);
+            }
+
+            _getBanner(urls) {
+                let urlsArray = urls.split(', ');
+                return urlsArray[0];
+            }
+
+            _getPromo(urls) {
+                let urlsArray = urls.split(', ');
+                return urlsArray[1];
             }
 
             deleteImages() {

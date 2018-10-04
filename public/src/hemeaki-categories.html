@@ -52,10 +52,14 @@
             }
         </style>
 
+        <iron-localstorage name="user-storage" value="{{storedUser}}"></iron-localstorage>
+
+        <app-localstorage-document key="userData" data="{{storedUser}}"></app-localstorage-document>
+
         <iron-ajax auto url="https://hemeaki-api.herokuapp.com/api/categories" handle-as="json" last-response="{{categorias}}"></iron-ajax>
 
         <iron-ajax id="editCategoryAjax" method="PUT" content-type="application/json" on-response="refresh"></iron-ajax>
-        <iron-ajax id="deleteCategoryAjax" method="DELETE" on-response="refresh"></iron-ajax>
+        <iron-ajax id="deleteCategoryAjax" method="DELETE" on-response="refresh" on-error="notDeleted"></iron-ajax>
 
         <h1>Categorías</h1>
         <br>
@@ -73,11 +77,13 @@
 
                             <div class="control">
                                 <paper-button class="item-btns">
-                                    <iron-icon class="small-icon" icon="create" on-tap="trigEditDialog" my-slug="[[item.slug]]" my-name="[[item.name]]"></iron-icon>
+                                    <iron-icon class="small-icon" icon="create" on-tap="trigEditDialog" my-slug="[[item.slug]]"
+                                        my-name="[[item.name]]"></iron-icon>
                                 </paper-button>
 
                                 <paper-button class="item-btns">
-                                    <iron-icon class="small-icon" icon="delete" on-tap="trigDeleteDialog" my-slug="[[item.slug]]" my-name="[[item.name]]"></iron-icon>
+                                    <iron-icon class="small-icon" icon="delete" on-tap="trigDeleteDialog" my-slug="[[item.slug]]"
+                                        my-name="[[item.name]]"></iron-icon>
                                 </paper-button>
                             </div>
 
@@ -119,6 +125,7 @@
 
             static get properties() {
                 return {
+                    storedUser:  Object,
                     selectedName: String,
                     selectedSlug: String,
                     newName: String,
@@ -165,9 +172,14 @@
             }
 
             deleteCategory() {
+                this.$.deleteCategoryAjax.headers = {Authorization: this.storedUser.token};
                 var deleteslug = this.selectedSlug;
                 this.$.deleteCategoryAjax.url = `https://hemeaki-api.herokuapp.com/api/category/${deleteslug}`;
                 this.$.deleteCategoryAjax.generateRequest();
+            }
+
+            notDeleted() {
+                console.error('No se borró');
             }
 
             refresh() {
